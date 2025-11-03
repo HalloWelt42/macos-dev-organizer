@@ -1,0 +1,18 @@
+[project]
+name = "devradar"
+version = "0.1.0"
+description = "Lokales Projekt-Dashboard mit Suche"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "watchdog>=6.0.0",
+    "httpx>=0.28.0",
+]
+
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["devradar*"]
