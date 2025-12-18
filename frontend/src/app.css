@@ -1,0 +1,72 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "highlight.js/styles/github-dark.min.css";
+
+button, [role="button"] {
+  cursor: pointer;
+}
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* Inline-Code in Prose-Bereichen -- Light Mode */
+.prose code:not(pre code) {
+  background: rgb(241 245 249);
+  color: rgb(180 83 9);
+  padding: 0.15em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+  border: 1px solid rgb(226 232 240);
+  position: relative;
+  cursor: pointer;
+}
+
+/* Inline-Code -- Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .prose code:not(pre code) {
+    background: rgb(30 41 59);
+    color: #f59e0b;
+    border: 1px solid rgb(51 65 85);
+  }
+}
+
+/* Backtick-Zeichen um Inline-Code ausblenden (Tailwind prose default) */
+.prose code::before,
+.prose code::after {
+  content: none !important;
+}
+
+/* Inline-Code: Copy-Icon bei Hover */
+.prose code:not(pre code):hover::after {
+  content: "\f0c5"; /* fa-copy */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 0.7em;
+  margin-left: 0.3em;
+  opacity: 0.5;
+}
+
+/* Code-Bloecke -- Light Mode */
+.prose pre {
+  background: rgb(248 250 252) !important;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.5rem;
+}
+
+/* Code-Bloecke -- Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .prose pre {
+    background: rgb(15 23 42) !important;
+    border: 1px solid rgb(51 65 85);
+  }
+}
+
+.prose pre code {
+  background: transparent !important;
+  border: none !important;
+  color: inherit;
+  padding: 0;
+}
