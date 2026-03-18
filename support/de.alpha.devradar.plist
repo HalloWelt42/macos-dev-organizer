@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  TEMPLATE: Diese Datei wird von install.sh dynamisch generiert.
+  Die Platzhalter werden durch die tatsaechlichen Pfade ersetzt.
+-->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>de.alpha.devradar</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>${PROJECT_DIR}/.venv/bin/python</string>
+        <string>-m</string>
+        <string>devradar.main</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>${PROJECT_DIR}</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>${HOME}/.local/share/devradar/stdout.log</string>
+    <key>StandardErrorPath</key>
+    <string>${HOME}/.local/share/devradar/stderr.log</string>
+</dict>
+</plist>
