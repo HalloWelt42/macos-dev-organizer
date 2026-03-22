@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+*.whl
+.venv/
+venv/
+
+# Node.js
+node_modules/
+frontend/dist/
+
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Daten
+*.db
+*.db-wal
+*.db-shm
+config.toml
+
+# Lokale Daten
+.local/
