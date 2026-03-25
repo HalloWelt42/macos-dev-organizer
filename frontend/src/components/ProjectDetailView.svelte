@@ -39,9 +39,19 @@
                 <i class="fa-brands fa-youtube"></i> YouTube
               </div>
             </div>
-            <div class="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-black/70 px-2.5 py-1 text-[11px]">
-              <code class="font-mono font-semibold text-amber-400">${vid}</code>
-              <i class="fa-solid fa-copy text-slate-400 ml-auto text-[10px]"></i>
+            <div class="absolute bottom-0 left-0 right-0 flex items-center gap-1 bg-black/70 px-2 py-1 text-[10px]">
+              <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:text-amber-300 no-underline" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-arrow-up-right-from-square mr-0.5"></i>Öffnen
+              </a>
+              <span class="text-slate-500 mx-0.5">|</span>
+              <span class="yt-copy-link text-slate-300 hover:text-white cursor-pointer" data-copy="https://www.youtube.com/watch?v=${vid}">
+                <i class="fa-solid fa-link mr-0.5"></i>Link
+              </span>
+              <span class="text-slate-500 mx-0.5">|</span>
+              <span class="yt-copy-id text-slate-300 hover:text-white cursor-pointer" data-copy="${vid}">
+                <i class="fa-solid fa-copy mr-0.5"></i>ID
+              </span>
+              <code class="font-mono text-amber-400/70 ml-auto">${vid}</code>
             </div>
           </div>
         </div>`;
@@ -224,7 +234,7 @@
       document.querySelectorAll(".readme-body code:not(pre code)").forEach((code) => {
         if ((code as HTMLElement).dataset.copyReady) return;
         (code as HTMLElement).dataset.copyReady = "1";
-        (code as HTMLElement).style.cursor = "copy";
+        (code as HTMLElement).style.cursor = "pointer";
         code.addEventListener("click", async (e) => {
           e.stopPropagation();
           const text = code.textContent || "";
@@ -248,23 +258,20 @@
         });
       });
 
-      // YouTube-Thumbnails: Klick kopiert Video-ID
-      document.querySelectorAll(".readme-body .yt-thumb-wrap").forEach((wrap) => {
-        if ((wrap as HTMLElement).dataset.ytReady) return;
-        (wrap as HTMLElement).dataset.ytReady = "1";
-        wrap.addEventListener("click", async (e) => {
+      // YouTube-Buttons: Link kopieren, ID kopieren
+      document.querySelectorAll(".readme-body .yt-copy-link, .readme-body .yt-copy-id").forEach((btn) => {
+        if ((btn as HTMLElement).dataset.copyReady) return;
+        (btn as HTMLElement).dataset.copyReady = "1";
+        btn.addEventListener("click", async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          const vid = (wrap as HTMLElement).dataset.ytId || "";
-          if (!vid) return;
-          await navigator.clipboard.writeText(vid);
-          const code = wrap.querySelector("code");
-          if (code) {
-            const orig = code.textContent;
-            code.textContent = "Kopiert!";
-            code.style.color = "#22c55e";
-            setTimeout(() => { code.textContent = orig; code.style.color = ""; }, 1500);
-          }
+          const text = (btn as HTMLElement).dataset.copy || "";
+          if (!text) return;
+          await navigator.clipboard.writeText(text);
+          const orig = btn.innerHTML;
+          btn.innerHTML = '<i class="fa-solid fa-check mr-0.5"></i>Kopiert';
+          (btn as HTMLElement).style.color = "#22c55e";
+          setTimeout(() => { btn.innerHTML = orig; (btn as HTMLElement).style.color = ""; }, 1500);
         });
       });
 
