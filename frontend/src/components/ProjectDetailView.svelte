@@ -34,16 +34,15 @@
         return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer shadow-sm hover:shadow-md transition-shadow" data-yt-id="${vid}" title="Klick kopiert Video-ID: ${vid}">
           <div class="relative">
             <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px]" />
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-600/90 text-white text-lg shadow-lg">
-                <i class="fa-solid fa-play ml-0.5"></i>
+            <div class="absolute top-2 right-2">
+              <div class="flex items-center gap-1 rounded bg-red-600/90 px-2 py-0.5 text-white text-[10px] font-medium shadow">
+                <i class="fa-brands fa-youtube"></i> YouTube
               </div>
             </div>
-          </div>
-          <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[11px]">
-            <i class="fa-brands fa-youtube text-red-500 text-xs"></i>
-            <code class="font-mono font-semibold text-amber-600 dark:text-amber-400">${vid}</code>
-            <i class="fa-solid fa-copy text-slate-400 ml-auto text-[10px]"></i>
+            <div class="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-black/70 px-2.5 py-1 text-[11px]">
+              <code class="font-mono font-semibold text-amber-400">${vid}</code>
+              <i class="fa-solid fa-copy text-slate-400 ml-auto text-[10px]"></i>
+            </div>
           </div>
         </div>`;
       }
