@@ -34,7 +34,7 @@
         return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow" data-yt-id="${vid}" title="Klick kopiert Video-ID: ${vid}">
           <div class="relative">
             <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px]" />
-            <div class="absolute top-2 right-2">
+            <div class="absolute top-2 right-2 pointer-events-none select-none">
               <div class="flex items-center gap-1 rounded bg-red-600/90 px-2 py-0.5 text-white text-[10px] font-medium shadow">
                 <i class="fa-brands fa-youtube"></i> YouTube
               </div>
