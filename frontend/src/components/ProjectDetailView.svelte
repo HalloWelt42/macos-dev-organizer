@@ -128,9 +128,26 @@
     });
   });
 
-  // README-Suche
+  // README-Suche mit Treffer-Navigation
   let readmeSearch = $state("");
   let readmeSearchCount = $state(0);
+  let readmeSearchIdx = $state(-1);
+
+  function scrollToSearchHit(idx: number) {
+    const hits = document.querySelectorAll(".readme-body mark.readme-search-hit");
+    if (hits.length === 0) return;
+    // Alte aktive Markierung zurücksetzen
+    hits.forEach(m => (m as HTMLElement).style.outline = "");
+    // Index wrappen
+    const i = ((idx % hits.length) + hits.length) % hits.length;
+    readmeSearchIdx = i;
+    const el = hits[i] as HTMLElement;
+    el.style.outline = "2px solid #f59e0b";
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function searchNext() { scrollToSearchHit(readmeSearchIdx + 1); }
+  function searchPrev() { scrollToSearchHit(readmeSearchIdx - 1); }
 
   // Textgröße (persistiert in localStorage, Prozent-Stufen)
   // Lightbox fuer Bilder
@@ -345,10 +362,10 @@
 
       walkTextNodes(container);
       readmeSearchCount = count;
+      readmeSearchIdx = -1;
 
-      // Zum ersten Treffer scrollen
-      const first = container.querySelector("mark.readme-search-hit");
-      if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Zum ersten Treffer springen
+      if (count > 0) scrollToSearchHit(0);
     }, 250);
 
     return () => clearTimeout(timer);
@@ -568,18 +585,33 @@
                 type="text"
                 bind:value={readmeSearch}
                 placeholder="Suchen..."
-                class="w-full rounded-md border border-slate-200 bg-slate-50 py-1 pl-6 pr-14 text-xs outline-none
+                onkeydown={(e: KeyboardEvent) => {
+                  if (e.key === "Enter" && readmeSearchCount > 0) {
+                    e.preventDefault();
+                    if (e.shiftKey) searchPrev(); else searchNext();
+                  }
+                  if (e.key === "Escape") { readmeSearch = ""; }
+                }}
+                class="w-full rounded-md border border-slate-200 bg-slate-50 py-1 pl-6 pr-20 text-xs outline-none
                        focus:border-amber-400 dark:border-slate-600 dark:bg-slate-900"
               />
-              {#if readmeSearch}
-                <span class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                  {#if readmeSearch.length >= 2}
-                    <span class="text-[10px] text-slate-400">{readmeSearchCount}</span>
-                  {/if}
-                  <button onclick={() => { readmeSearch = ""; }} class="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" aria-label="Suche leeren">
-                    <i class="fa-solid fa-xmark"></i>
+              {#if readmeSearch && readmeSearch.length >= 2 && readmeSearchCount > 0}
+                <span class="absolute right-8 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                  <button onclick={searchPrev} class="rounded p-0.5 text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" aria-label="Vorheriger Treffer">
+                    <i class="fa-solid fa-chevron-up"></i>
+                  </button>
+                  <span class="min-w-[2.5rem] text-center font-mono text-[10px] text-slate-400">{readmeSearchIdx + 1}/{readmeSearchCount}</span>
+                  <button onclick={searchNext} class="rounded p-0.5 text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" aria-label="Nächster Treffer">
+                    <i class="fa-solid fa-chevron-down"></i>
                   </button>
                 </span>
+              {:else if readmeSearch && readmeSearch.length >= 2}
+                <span class="absolute right-8 top-1/2 -translate-y-1/2 text-[10px] text-slate-400">0</span>
+              {/if}
+              {#if readmeSearch}
+                <button onclick={() => { readmeSearch = ""; }} class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" aria-label="Suche leeren">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
               {/if}
             </div>
 
@@ -650,6 +682,13 @@
         <p class="mt-0.5 text-sm text-slate-500">{typeLabels[project.project_type] || project.project_type}</p>
 
         <div class="mt-3 flex flex-wrap gap-2">
+          {#if project.metadata?.remote_url}
+            {@const repoUrl = project.metadata.remote_url.replace(/\.git$/, "").replace(/^git@github\.com:/, "https://github.com/")}
+            <a href={repoUrl} target="_blank" rel="noopener noreferrer"
+              class="rounded-md bg-slate-100 px-3 py-1.5 text-xs transition-colors hover:bg-purple-100 hover:text-purple-700 dark:bg-slate-700 dark:hover:bg-purple-900 no-underline text-slate-700 dark:text-slate-300">
+              <i class="fa-brands fa-github mr-1"></i>Repo
+            </a>
+          {/if}
           <button onclick={() => handleOpen("finder")} class="rounded-md bg-slate-100 px-3 py-1.5 text-xs transition-colors hover:bg-amber-100 hover:text-amber-700 dark:bg-slate-700 dark:hover:bg-amber-900">
             <i class="fa-solid fa-folder-open mr-1"></i>Finder
           </button>
