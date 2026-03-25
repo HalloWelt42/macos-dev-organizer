@@ -31,7 +31,7 @@
       const ytMatch = href.match(YT_RE);
       if (ytMatch) {
         const vid = ytMatch[1];
-        return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer shadow-sm hover:shadow-md transition-shadow" data-yt-id="${vid}" title="Klick kopiert Video-ID: ${vid}">
+        return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow" data-yt-id="${vid}" title="Klick kopiert Video-ID: ${vid}">
           <div class="relative">
             <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px]" />
             <div class="absolute top-2 right-2">
