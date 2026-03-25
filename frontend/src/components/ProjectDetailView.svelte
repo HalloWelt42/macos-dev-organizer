@@ -399,10 +399,13 @@
     }
   });
 
+  let currentIdx = $derived(allProjectIds.indexOf(projectId));
+  let hasPrev = $derived(currentIdx > 0);
+  let hasNext = $derived(currentIdx >= 0 && currentIdx < allProjectIds.length - 1);
+
   function navigateRelative(offset: number) {
-    const idx = allProjectIds.indexOf(projectId);
-    if (idx < 0) return;
-    const newIdx = idx + offset;
+    if (currentIdx < 0) return;
+    const newIdx = currentIdx + offset;
     if (newIdx >= 0 && newIdx < allProjectIds.length) {
       navigate(`/project/${allProjectIds[newIdx]}`);
     }
@@ -515,12 +518,24 @@
     <i class="fa-solid fa-arrow-left"></i>
     Zurück
   </button>
-  <div class="flex items-center gap-2 text-xs text-slate-400">
-    <button onclick={() => navigateRelative(-1)} class="rounded p-1 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300" title="Vorheriges Projekt">
+  <div class="flex items-center gap-1 text-xs text-slate-400">
+    <button
+      onclick={() => navigateRelative(-1)}
+      disabled={!hasPrev}
+      class="rounded p-1.5 transition-colors hover:bg-slate-200 hover:text-slate-600 disabled:opacity-20 disabled:cursor-default dark:hover:bg-slate-700 dark:hover:text-slate-300"
+      title="Vorheriges Projekt"
+    >
       <i class="fa-solid fa-chevron-left"></i>
     </button>
-    <span class="hidden sm:inline">Pfeiltasten</span>
-    <button onclick={() => navigateRelative(1)} class="rounded p-1 hover:bg-slate-200 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300" title="Nächstes Projekt">
+    {#if currentIdx >= 0}
+      <span class="min-w-[3.5rem] text-center font-mono text-[10px]">{currentIdx + 1} / {allProjectIds.length}</span>
+    {/if}
+    <button
+      onclick={() => navigateRelative(1)}
+      disabled={!hasNext}
+      class="rounded p-1.5 transition-colors hover:bg-slate-200 hover:text-slate-600 disabled:opacity-20 disabled:cursor-default dark:hover:bg-slate-700 dark:hover:text-slate-300"
+      title="Nächstes Projekt"
+    >
       <i class="fa-solid fa-chevron-right"></i>
     </button>
   </div>
