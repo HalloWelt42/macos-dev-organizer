@@ -212,6 +212,51 @@ async def api_file(project_path: str = Query(...), file_path: str = Query(...)):
     )
 
 
+import re as _re
+import httpx as _httpx
+
+# YouTube-Thumbnail Cache (im Speicher, max 200 Eintraege)
+_yt_cache: dict[str, bytes] = {}
+_YT_ID_RE = _re.compile(r"^[a-zA-Z0-9_-]{11}$")
+
+
+@app.get("/api/yt-thumb/{video_id}")
+async def youtube_thumbnail(video_id: str):
+    """YouTube-Thumbnail als Proxy ausliefern (kein externer CDN-Aufruf vom Frontend)."""
+    if not _YT_ID_RE.match(video_id):
+        raise HTTPException(status_code=400, detail="Ungültige Video-ID")
+
+    if video_id in _yt_cache:
+        return StreamingResponse(
+            iter([_yt_cache[video_id]]),
+            media_type="image/jpeg",
+            headers={"Cache-Control": "public, max-age=604800, immutable"},
+        )
+
+    # Thumbnail von YouTube laden
+    url = f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
+    try:
+        async with _httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(url)
+            if resp.status_code != 200:
+                raise HTTPException(status_code=404, detail="Thumbnail nicht gefunden")
+            data = resp.content
+    except _httpx.RequestError:
+        raise HTTPException(status_code=502, detail="YouTube nicht erreichbar")
+
+    # Cache begrenzen
+    if len(_yt_cache) > 200:
+        oldest = next(iter(_yt_cache))
+        del _yt_cache[oldest]
+    _yt_cache[video_id] = data
+
+    return StreamingResponse(
+        iter([data]),
+        media_type="image/jpeg",
+        headers={"Cache-Control": "public, max-age=604800, immutable"},
+    )
+
+
 @app.post("/api/projects/{project_id}/translate")
 async def api_translate(project_id: int):
     """Übersetze die README eines Projekts ins Deutsche per LLM-Streaming."""
