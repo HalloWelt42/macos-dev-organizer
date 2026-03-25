@@ -86,7 +86,7 @@
 
 <div
   class="group flex cursor-pointer items-center gap-4 border-b border-slate-100 px-3 py-2.5 transition-colors
-         hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50"
+         hover:bg-amber-50/50 dark:border-slate-800 dark:hover:bg-amber-950/20"
   onclick={() => navigate(`/project/${project.id}`)}
   role="button"
   tabindex="0"
