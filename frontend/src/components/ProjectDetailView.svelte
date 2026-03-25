@@ -31,12 +31,18 @@
       const ytMatch = href.match(YT_RE);
       if (ytMatch) {
         const vid = ytMatch[1];
-        return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer" data-yt-id="${vid}" title="Klick kopiert Video-ID: ${vid}">
-          <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block max-w-[320px]" style="cursor:copy;" />
-          <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs">
-            <i class="fa-brands fa-youtube text-red-500"></i>
-            <code class="text-slate-600 dark:text-slate-300">${vid}</code>
-            <i class="fa-solid fa-copy text-slate-400 ml-auto"></i>
+        return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer shadow-sm hover:shadow-md transition-shadow" data-yt-id="${vid}" title="Klick kopiert Video-ID: ${vid}">
+          <div class="relative">
+            <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px]" />
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="rounded-full bg-red-600/90 px-2.5 py-1.5 text-white text-sm shadow-lg">
+                <i class="fa-brands fa-youtube mr-1"></i> Play
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[11px]">
+            <code class="font-mono text-slate-600 dark:text-slate-300">${vid}</code>
+            <i class="fa-solid fa-copy text-slate-400 ml-auto text-[10px]"></i>
           </div>
         </div>`;
       }
@@ -109,6 +115,8 @@
     return DOMPurify.sanitize(raw, {
       ADD_TAGS: ["details", "summary"],
       ADD_ATTR: ["align", "target", "rel"],
+      FORBID_TAGS: ["iframe", "object", "embed", "script", "style", "link", "form", "input", "textarea", "button", "select"],
+      FORBID_ATTR: ["onerror", "onload", "onclick", "onmouseover", "onfocus", "onblur", "style"],
     });
   });
 
