@@ -17,12 +17,32 @@
     return `<h${depth} id="${id}">${text}</h${depth}>`;
   };
 
-  // Externe Links in neuem Tab, Anker-Links scrollen inline
+  // YouTube-ID aus URL extrahieren
+  const YT_RE = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+  // Externe Links in neuem Tab, Anker-Links scrollen inline, YouTube-Links als Thumbnail
   markedRenderer.link = function({ href, title, tokens }) {
     const text = this.parser.parseInline(tokens);
     const titleAttr = title ? ` title="${title}"` : "";
-    const isExternal = href && (href.startsWith("http://") || href.startsWith("https://"));
     const isAnchor = href && href.startsWith("#");
+
+    // YouTube-Links: Thumbnail + klickbare ID
+    if (href) {
+      const ytMatch = href.match(YT_RE);
+      if (ytMatch) {
+        const vid = ytMatch[1];
+        return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer" data-yt-id="${vid}" title="Klick kopiert Video-ID: ${vid}">
+          <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block max-w-[320px]" style="cursor:copy;" />
+          <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs">
+            <i class="fa-brands fa-youtube text-red-500"></i>
+            <code class="text-slate-600 dark:text-slate-300">${vid}</code>
+            <i class="fa-solid fa-copy text-slate-400 ml-auto"></i>
+          </div>
+        </div>`;
+      }
+    }
+
+    const isExternal = href && (href.startsWith("http://") || href.startsWith("https://"));
     if (isExternal) {
       return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
     }
@@ -97,6 +117,34 @@
   let readmeSearchCount = $state(0);
 
   // Textgröße (persistiert in localStorage, Prozent-Stufen)
+  // Lightbox fuer Bilder
+  let lightboxOpen = $state(false);
+  let lightboxImages: string[] = $state([]);
+  let lightboxIndex = $state(0);
+
+  function openLightbox(src: string) {
+    const imgs = Array.from(document.querySelectorAll(".readme-body img"))
+      .map(img => (img as HTMLImageElement).src)
+      .filter(s => s);
+    if (imgs.length === 0) return;
+    lightboxImages = imgs;
+    lightboxIndex = Math.max(0, imgs.indexOf(src));
+    lightboxOpen = true;
+  }
+
+  function lightboxPrev() {
+    lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+  }
+  function lightboxNext() {
+    lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+  }
+  function lightboxKeydown(e: KeyboardEvent) {
+    if (!lightboxOpen) return;
+    if (e.key === "Escape") lightboxOpen = false;
+    else if (e.key === "ArrowLeft") lightboxPrev();
+    else if (e.key === "ArrowRight") lightboxNext();
+  }
+
   const ZOOM_STEPS = [75, 85, 100, 115, 130, 150];
   let zoomIndex = $state(
     typeof localStorage !== "undefined"
@@ -168,7 +216,7 @@
       document.querySelectorAll(".readme-body code:not(pre code)").forEach((code) => {
         if ((code as HTMLElement).dataset.copyReady) return;
         (code as HTMLElement).dataset.copyReady = "1";
-        (code as HTMLElement).style.cursor = "pointer";
+        (code as HTMLElement).style.cursor = "copy";
         code.addEventListener("click", async (e) => {
           e.stopPropagation();
           const text = code.textContent || "";
@@ -190,6 +238,45 @@
           const target = document.querySelector(`.readme-body ${href}`);
           if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
         });
+      });
+
+      // YouTube-Thumbnails: Klick kopiert Video-ID
+      document.querySelectorAll(".readme-body .yt-thumb-wrap").forEach((wrap) => {
+        if ((wrap as HTMLElement).dataset.ytReady) return;
+        (wrap as HTMLElement).dataset.ytReady = "1";
+        wrap.addEventListener("click", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const vid = (wrap as HTMLElement).dataset.ytId || "";
+          if (!vid) return;
+          await navigator.clipboard.writeText(vid);
+          const code = wrap.querySelector("code");
+          if (code) {
+            const orig = code.textContent;
+            code.textContent = "Kopiert!";
+            code.style.color = "#22c55e";
+            setTimeout(() => { code.textContent = orig; code.style.color = ""; }, 1500);
+          }
+        });
+      });
+
+      // Bilder: Klickbar fuer Lightbox (nur Bilder > 80px)
+      document.querySelectorAll(".readme-body img").forEach((img) => {
+        const el = img as HTMLImageElement;
+        if (el.dataset.lightboxReady) return;
+        el.dataset.lightboxReady = "1";
+        const check = () => {
+          if (el.naturalWidth > 80 && el.naturalHeight > 80) {
+            el.style.cursor = "zoom-in";
+            el.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              openLightbox(el.src);
+            });
+          }
+        };
+        if (el.complete) check();
+        else el.addEventListener("load", check);
       });
     }, 200);
   });
@@ -311,6 +398,13 @@
   $effect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      // Lightbox hat Vorrang
+      if (lightboxOpen) {
+        if (e.key === "Escape") { e.preventDefault(); lightboxOpen = false; }
+        else if (e.key === "ArrowLeft") { e.preventDefault(); lightboxPrev(); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); lightboxNext(); }
+        return;
+      }
       if (e.key === "ArrowLeft") { e.preventDefault(); navigateRelative(-1); }
       if (e.key === "ArrowRight") { e.preventDefault(); navigateRelative(1); }
       if (e.key === "Escape") { navigate("/"); }
@@ -608,3 +702,50 @@
   </div>
 {/if}
 </div>
+
+<!-- Lightbox -->
+{#if lightboxOpen}
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<div
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+  onclick={() => lightboxOpen = false}
+  onkeydown={lightboxKeydown}
+  role="dialog"
+  aria-label="Bildvorschau"
+>
+  <!-- Zaehler -->
+  <div class="absolute top-4 left-1/2 -translate-x-1/2 text-sm text-white/60">
+    {lightboxIndex + 1} / {lightboxImages.length}
+  </div>
+
+  <!-- Schliessen -->
+  <button onclick={() => lightboxOpen = false}
+    class="absolute top-4 right-4 text-2xl text-white/70 hover:text-white" aria-label="Schliessen">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+
+  <!-- Vorheriges -->
+  {#if lightboxImages.length > 1}
+    <button onclick={(e: MouseEvent) => { e.stopPropagation(); lightboxPrev(); }}
+      class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-xl text-white/70 hover:bg-white/20 hover:text-white"
+      aria-label="Vorheriges Bild">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <button onclick={(e: MouseEvent) => { e.stopPropagation(); lightboxNext(); }}
+      class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-3 text-xl text-white/70 hover:bg-white/20 hover:text-white"
+      aria-label="Nächstes Bild">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  {/if}
+
+  <!-- Bild -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+  <img
+    src={lightboxImages[lightboxIndex]}
+    alt="Vorschau"
+    class="max-h-[90vh] max-w-[90vw] object-contain"
+    onclick={(e: MouseEvent) => e.stopPropagation()}
+  />
+</div>
+{/if}
