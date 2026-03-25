@@ -35,13 +35,14 @@
           <div class="relative">
             <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px]" />
             <div class="absolute inset-0 flex items-center justify-center">
-              <div class="rounded-full bg-red-600/90 px-2.5 py-1.5 text-white text-sm shadow-lg">
-                <i class="fa-brands fa-youtube mr-1"></i> Play
+              <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-600/90 text-white text-lg shadow-lg">
+                <i class="fa-solid fa-play ml-0.5"></i>
               </div>
             </div>
           </div>
           <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-[11px]">
-            <code class="font-mono text-slate-600 dark:text-slate-300">${vid}</code>
+            <i class="fa-brands fa-youtube text-red-500 text-xs"></i>
+            <code class="font-mono font-semibold text-amber-600 dark:text-amber-400">${vid}</code>
             <i class="fa-solid fa-copy text-slate-400 ml-auto text-[10px]"></i>
           </div>
         </div>`;
