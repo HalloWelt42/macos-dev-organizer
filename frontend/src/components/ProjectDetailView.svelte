@@ -39,19 +39,17 @@
                 <i class="fa-brands fa-youtube"></i> YouTube
               </div>
             </div>
-            <div class="absolute bottom-0 left-0 right-0 flex items-center gap-1 bg-black/70 px-2 py-1 text-[10px]">
-              <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:text-amber-300 no-underline" onclick="event.stopPropagation()">
-                <i class="fa-solid fa-arrow-up-right-from-square mr-0.5"></i>Öffnen
+            <div class="absolute bottom-0 left-0 right-0 flex items-center bg-black/80 px-2 py-1.5 text-[10px]">
+              <code class="font-mono font-semibold text-amber-400 mr-auto">${vid}</code>
+              <span class="yt-copy-link rounded px-1.5 py-0.5 text-slate-300 hover:bg-white/10 hover:text-white cursor-pointer" data-copy="https://www.youtube.com/watch?v=${vid}">
+                <i class="fa-solid fa-link"></i>
+              </span>
+              <span class="yt-copy-id rounded px-1.5 py-0.5 text-slate-300 hover:bg-white/10 hover:text-white cursor-pointer" data-copy="${vid}">
+                <i class="fa-solid fa-copy"></i>
+              </span>
+              <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="rounded px-1.5 py-0.5 text-slate-300 hover:bg-white/10 hover:text-white no-underline" onclick="event.stopPropagation()">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
               </a>
-              <span class="text-slate-500 mx-0.5">|</span>
-              <span class="yt-copy-link text-slate-300 hover:text-white cursor-pointer" data-copy="https://www.youtube.com/watch?v=${vid}">
-                <i class="fa-solid fa-link mr-0.5"></i>Link
-              </span>
-              <span class="text-slate-500 mx-0.5">|</span>
-              <span class="yt-copy-id text-slate-300 hover:text-white cursor-pointer" data-copy="${vid}">
-                <i class="fa-solid fa-copy mr-0.5"></i>ID
-              </span>
-              <code class="font-mono text-amber-400/70 ml-auto">${vid}</code>
             </div>
           </div>
         </div>`;
