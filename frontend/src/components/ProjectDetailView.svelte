@@ -31,7 +31,7 @@
       const ytMatch = href.match(YT_RE);
       if (ytMatch) {
         const vid = ytMatch[1];
-        return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow" data-yt-id="${vid}" title="Klick kopiert Video-ID: ${vid}">
+        return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow" data-yt-id="${vid}">
           <div class="relative">
             <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px]" />
             <div class="absolute top-2 right-2 pointer-events-none select-none">
@@ -40,14 +40,14 @@
               </div>
             </div>
             <div class="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-black/80 px-2.5 py-1.5 text-[10px]">
-              <span class="yt-copy-link cursor-pointer text-slate-300 hover:text-white" data-copy="https://www.youtube.com/watch?v=${vid}">
+              <span class="yt-copy-link cursor-pointer text-slate-300 hover:text-white" data-copy="https://www.youtube.com/watch?v=${vid}" title="YouTube-Link kopieren">
                 <i class="fa-solid fa-link mr-0.5"></i>Link kopieren
               </span>
               <span class="text-slate-600">|</span>
-              <span class="yt-copy-id cursor-pointer font-mono font-semibold text-amber-400 hover:text-amber-300" data-copy="${vid}">
+              <span class="yt-copy-id cursor-pointer font-mono font-semibold text-amber-400 hover:text-amber-300" data-copy="${vid}" title="Video-ID kopieren">
                 ${vid} <i class="fa-solid fa-copy ml-0.5 text-[9px] text-amber-400/60"></i>
               </span>
-              <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="ml-auto text-slate-300 hover:text-white no-underline" onclick="event.stopPropagation()">
+              <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="ml-auto text-slate-300 hover:text-white no-underline" onclick="event.stopPropagation()" title="Auf YouTube öffnen">
                 <i class="fa-solid fa-arrow-up-right-from-square mr-0.5"></i>Öffnen
               </a>
             </div>
