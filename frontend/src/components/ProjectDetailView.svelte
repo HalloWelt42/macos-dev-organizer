@@ -290,11 +290,22 @@
         });
       });
 
-      // Bilder: Klickbar fuer Lightbox (nur Bilder > 80px)
+      // Bilder: Verlinkte Bilder öffnen Link in neuem Tab, unverlinkte öffnen Lightbox
       document.querySelectorAll(".readme-body img").forEach((img) => {
         const el = img as HTMLImageElement;
         if (el.dataset.lightboxReady) return;
         el.dataset.lightboxReady = "1";
+
+        const parentLink = el.closest("a");
+        if (parentLink && parentLink.href) {
+          // Bild ist in einem Link -- Link in neuem Tab öffnen
+          parentLink.setAttribute("target", "_blank");
+          parentLink.setAttribute("rel", "noopener noreferrer");
+          el.style.cursor = "pointer";
+          return;
+        }
+
+        // Unverlinkte Bilder: Lightbox (nur > 80px)
         const check = () => {
           if (el.naturalWidth > 80 && el.naturalHeight > 80) {
             el.style.cursor = "zoom-in";
