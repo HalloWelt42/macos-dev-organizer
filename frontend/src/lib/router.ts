@@ -6,7 +6,7 @@
 type Listener = () => void;
 
 export type Route = {
-  page: "dashboard" | "project" | "settings" | "info";
+  page: "dashboard" | "project" | "settings" | "info" | "history";
   projectId?: number;
   infoTab?: string;
 };
@@ -27,6 +27,7 @@ export function parseRoute(path?: string): Route {
   if (projectMatch) return { page: "project", projectId: parseInt(projectMatch[1], 10) };
 
   if (p === "/settings") return { page: "settings" };
+  if (p === "/history") return { page: "history" };
 
   const infoMatch = p.match(/^\/info(?:\/(.+))?$/);
   if (infoMatch) return { page: "info", infoTab: infoMatch[1] || "info" };

@@ -9,6 +9,7 @@
   import AskPanel from "../components/AskPanel.svelte";
   import SettingsView from "../components/SettingsView.svelte";
   import InfoView from "../components/InfoView.svelte";
+  import AskHistory from "../components/AskHistory.svelte";
   import SvelteMarkdown, { Html } from "@humanspeak/svelte-markdown";
   const mdRenderers = { html: Html };
   import { navigate, getQuery, updateQuery, type Route } from "../lib/router";
@@ -17,6 +18,7 @@
   let selectedProjectId: number | null = $derived(route.page === "project" ? route.projectId ?? null : null);
   let showSettings = $derived(route.page === "settings");
   let showInfo = $derived(route.page === "info");
+  let showHistory = $derived(route.page === "history");
   let infoTab = $derived(route.infoTab || "info");
 
   // Query-Parameter beim Start lesen
@@ -242,8 +244,15 @@
         </button>
       </div>
 
-      <!-- Einstellungen -->
+      <!-- Einstellungen + Verlauf -->
       <div class="mt-4 border-t border-slate-200 pt-3 dark:border-slate-700">
+        <button
+          onclick={() => navigate(showHistory ? "/" : "/history")}
+          class="flex w-full items-center rounded-md px-2 py-1.5 text-xs transition-colors
+                 {showHistory ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'}"
+        >
+          <i class="fa-solid fa-clock-rotate-left mr-2 w-4 text-center"></i>KI-Verlauf
+        </button>
         <button
           onclick={() => navigate(showSettings ? "/" : "/settings")}
           class="flex w-full items-center rounded-md px-2 py-1.5 text-xs transition-colors
@@ -289,8 +298,10 @@
     </aside>
 
     <!-- Content: bei Detail kein eigenes Scroll, Detail managed das selbst -->
-    <main class="flex-1 min-h-0 {selectedProjectId || (askAnswer || askLoading) ? 'overflow-hidden p-3' : showSettings || showInfo ? 'overflow-hidden p-4' : 'overflow-y-auto p-4'}">
-      {#if showInfo}
+    <main class="flex-1 min-h-0 {selectedProjectId || (askAnswer || askLoading) ? 'overflow-hidden p-3' : showSettings || showInfo || showHistory ? 'overflow-hidden p-4' : 'overflow-y-auto p-4'}">
+      {#if showHistory}
+        <AskHistory />
+      {:else if showInfo}
         <InfoView initialTab={infoTab} />
       {:else if showSettings}
         <SettingsView onSave={handleSettingsSaved} />
