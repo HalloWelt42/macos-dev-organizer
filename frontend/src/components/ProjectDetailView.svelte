@@ -290,23 +290,31 @@
         });
       });
 
-      // Bilder: Verlinkte Bilder öffnen Link in neuem Tab, unverlinkte öffnen Lightbox
+      // Bilder: Badges ignorieren, verlinkte öffnen Link, unverlinkte öffnen Lightbox
       document.querySelectorAll(".readme-body img").forEach((img) => {
         const el = img as HTMLImageElement;
         if (el.dataset.lightboxReady) return;
         el.dataset.lightboxReady = "1";
 
-        const parentLink = el.closest("a");
-        if (parentLink && parentLink.href) {
-          // Bild ist in einem Link -- Link in neuem Tab öffnen
-          parentLink.setAttribute("target", "_blank");
-          parentLink.setAttribute("rel", "noopener noreferrer");
-          el.style.cursor = "pointer";
-          return;
-        }
+        const setup = () => {
+          // Badges (kleine Bilder < 40px Höhe) komplett nicht klickbar
+          if (el.naturalHeight < 40) {
+            el.style.pointerEvents = "none";
+            const parentLink = el.closest("a");
+            if (parentLink) parentLink.style.pointerEvents = "none";
+            return;
+          }
 
-        // Unverlinkte Bilder: Lightbox (nur > 80px)
-        const check = () => {
+          const parentLink = el.closest("a");
+          if (parentLink && parentLink.href) {
+            // Bild in Link -- Link in neuem Tab öffnen
+            parentLink.setAttribute("target", "_blank");
+            parentLink.setAttribute("rel", "noopener noreferrer");
+            el.style.cursor = "pointer";
+            return;
+          }
+
+          // Unverlinkte grosse Bilder: Lightbox
           if (el.naturalWidth > 80 && el.naturalHeight > 80) {
             el.style.cursor = "zoom-in";
             el.addEventListener("click", (e) => {
@@ -316,8 +324,8 @@
             });
           }
         };
-        if (el.complete) check();
-        else el.addEventListener("load", check);
+        if (el.complete) setup();
+        else el.addEventListener("load", setup);
       });
     }, 200);
   });
