@@ -31,8 +31,8 @@
       const ytMatch = href.match(YT_RE);
       if (ytMatch) {
         const vid = ytMatch[1];
-        return `<div class="yt-thumb-wrap relative my-3 inline-block cursor-pointer overflow-hidden rounded" data-yt-id="${vid}">
-          <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px] rounded" />
+        return `<div class="yt-thumb-wrap relative my-3 inline-block w-[300px] cursor-pointer overflow-hidden rounded" data-yt-id="${vid}">
+          <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-full" />
           <span class="absolute top-1.5 right-1.5 pointer-events-none select-none rounded bg-red-600/90 px-1.5 py-0.5 text-white text-[9px] font-medium"><i class="fa-brands fa-youtube"></i> YouTube</span>
           <div class="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-black/70 px-2 py-1 text-[10px]">
             <span class="yt-copy-link cursor-pointer text-slate-300 hover:text-white" data-copy="https://www.youtube.com/watch?v=${vid}" title="YouTube-Link kopieren"><i class="fa-solid fa-link mr-0.5"></i>Link</span>
