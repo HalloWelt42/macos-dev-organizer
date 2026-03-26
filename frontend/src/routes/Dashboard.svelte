@@ -11,7 +11,7 @@
   import InfoView from "../components/InfoView.svelte";
   import SvelteMarkdown, { Html } from "@humanspeak/svelte-markdown";
   const mdRenderers = { html: Html };
-  import { navigate, type Route } from "../lib/router";
+  import { navigate, getQuery, updateQuery, type Route } from "../lib/router";
 
   let { route }: { route: Route } = $props();
   let selectedProjectId: number | null = $derived(route.page === "project" ? route.projectId ?? null : null);
@@ -19,14 +19,16 @@
   let showInfo = $derived(route.page === "info");
   let infoTab = $derived(route.infoTab || "info");
 
+  // Query-Parameter beim Start lesen
+  const _q = getQuery();
   let projects: Project[] = $state([]);
   let stats: Stats = $state({ total: 0, by_type: {}, last_scan: "" });
-  let searchQuery = $state("");
-  let activeTypes: Set<string> = $state(new Set());
-  let activeSort = $state("name");
+  let searchQuery = $state(_q.get("q") || "");
+  let activeTypes: Set<string> = $state(new Set(_q.get("type")?.split(",").filter(Boolean) || []));
+  let activeSort = $state(_q.get("sort") || "name");
   let loading = $state(true);
   let highlightIds: Set<number> = $state(new Set());
-  let viewMode: "grid" | "list" = $state("grid");
+  let viewMode: "grid" | "list" = $state((_q.get("view") as "grid" | "list") || "grid");
   let scanRoots: string[] = $state([]);
   let appVersion = $state("");
   let backendOnline = $state(false);
@@ -75,6 +77,16 @@
     }
   }
 
+  /** Query-Parameter synchronisieren. */
+  function syncQuery() {
+    updateQuery({
+      q: searchQuery || "",
+      type: activeTypes.size > 0 ? [...activeTypes].join(",") : "",
+      sort: activeSort !== "name" ? activeSort : "",
+      view: viewMode !== "grid" ? viewMode : "",
+    });
+  }
+
   /** Zurück zur Projektliste (Einstellungen/Detail schliessen). */
   function showProjectList() {
     navigate("/");
@@ -84,11 +96,13 @@
     searchQuery = q;
     showProjectList();
     loadProjects();
+    syncQuery();
   }
 
   function handleFilter() {
     showProjectList();
     loadProjects();
+    syncQuery();
   }
 
   function handleRescan() {
@@ -213,14 +227,14 @@
       <h2 class="mb-2 mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Ansicht</h2>
       <div class="flex gap-1">
         <button
-          onclick={() => { viewMode = "grid"; showProjectList(); }}
+          onclick={() => { viewMode = "grid"; showProjectList(); syncQuery(); }}
           class="flex-1 rounded-md px-2 py-1.5 text-xs transition-colors
                  {viewMode === 'grid' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'}"
         >
           <i class="fa-solid fa-table-cells mr-1"></i>Karten
         </button>
         <button
-          onclick={() => { viewMode = "list"; showProjectList(); }}
+          onclick={() => { viewMode = "list"; showProjectList(); syncQuery(); }}
           class="flex-1 rounded-md px-2 py-1.5 text-xs transition-colors
                  {viewMode === 'list' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'}"
         >

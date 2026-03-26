@@ -40,6 +40,21 @@ export function projectIdFromPath(path?: string): number | null {
   return route.projectId ?? null;
 }
 
+/** Query-Parameter lesen. */
+export function getQuery(): URLSearchParams {
+  return new URLSearchParams(window.location.search);
+}
+
+/** Query-Parameter aktualisieren (replaceState). */
+export function updateQuery(params: Record<string, string>): void {
+  const url = new URL(window.location.href);
+  for (const [k, v] of Object.entries(params)) {
+    if (v) url.searchParams.set(k, v);
+    else url.searchParams.delete(k);
+  }
+  history.replaceState(null, "", url.pathname + url.search);
+}
+
 /** Navigieren (pushState). */
 export function navigate(path: string, replace = false): void {
   if (path === _currentPath) return;
