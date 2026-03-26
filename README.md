@@ -81,4 +81,4 @@ docs/              Screenshots
 
 ## Lizenz
 
-CC BY-NC-ND 4.0 mit Zusatzbestimmungen. Siehe [Lizenz](frontend/public/legal/de/lizenz.md) fuer Details.
+CC BY-NC-ND 4.0 mit Zusatzbestimmungen. Siehe [Lizenz](frontend/public/legal/de/lizenz.md) für Details.

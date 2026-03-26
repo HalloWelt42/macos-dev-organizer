@@ -1,5 +1,5 @@
 /**
- * Minimaler History-Router fuer DevRadar.
+ * Minimaler History-Router für DevRadar.
  * Echte Pfade statt Hash-Routing.
  */
 

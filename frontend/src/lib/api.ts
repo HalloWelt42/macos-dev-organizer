@@ -17,7 +17,7 @@ export async function ensureToken(): Promise<string> {
   return _tokenPromise;
 }
 
-/** Header-Objekt mit CSRF-Token fuer schreibende Requests. */
+/** Header-Objekt mit CSRF-Token für schreibende Requests. */
 export async function authHeaders(extra: Record<string, string> = {}): Promise<Record<string, string>> {
   const token = await ensureToken();
   return { "X-DevRadar-Token": token, ...extra };

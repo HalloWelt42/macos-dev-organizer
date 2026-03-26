@@ -196,7 +196,7 @@ async def api_file(project_path: str = Query(...), file_path: str = Query(...)):
     if full_path.suffix.lower() not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=403, detail="Dateityp nicht erlaubt")
 
-    # Cache-Header: Bilder/Videos lange cachen (Inhalt aendert sich selten)
+    # Cache-Header: Bilder/Videos lange cachen (Inhalt ändert sich selten)
     import hashlib
     stat = full_path.stat()
     etag = hashlib.md5(f"{full_path}:{stat.st_mtime}:{stat.st_size}".encode()).hexdigest()
@@ -338,7 +338,7 @@ README:
         projects_dummy = [{"id": project_id, "name": project.name}]
         full_text = ""
         async for chunk in stream_llm(translate_prompt, projects_dummy, config.llm):
-            # Mitschneiden fuer Persistierung
+            # Mitschneiden für Persistierung
             import json as _json
             try:
                 line = chunk.strip()

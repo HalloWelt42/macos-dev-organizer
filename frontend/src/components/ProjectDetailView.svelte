@@ -6,10 +6,10 @@
   import { marked } from "marked";
   import DOMPurify from "dompurify";
 
-  // marked fuer GitHub Flavored Markdown mit HTML
+  // marked fürGitHub Flavored Markdown mit HTML
   const markedRenderer = new marked.Renderer();
 
-  // Headings mit GitHub-kompatiblen IDs (fuer Anker-Links)
+  // Headings mit GitHub-kompatiblen IDs (für Anker-Links)
   markedRenderer.heading = function({ tokens, depth }) {
     const text = this.parser.parseInline(tokens);
     const raw = tokens.map((t: any) => t.raw || t.text || "").join("");
@@ -138,7 +138,7 @@
   function searchPrev() { scrollToSearchHit(readmeSearchIdx - 1); }
 
   // Textgröße (persistiert in localStorage, Prozent-Stufen)
-  // Lightbox fuer Bilder
+  // Lightbox fürBilder
   let lightboxOpen = $state(false);
   let lightboxImages: string[] = $state([]);
   let lightboxIndex = $state(0);
@@ -207,7 +207,7 @@
           hljs.highlightElement(block as HTMLElement);
         }
       });
-      // Copy-Buttons fuer Code-Bloecke -- direkt am <pre> Element
+      // Copy-Buttons für Code-Blöcke -- direkt am <pre> Element
       document.querySelectorAll(".readme-body pre").forEach((pre) => {
         if (pre.querySelector(".copy-btn")) return;
         (pre as HTMLElement).style.position = "relative";
@@ -233,7 +233,7 @@
         });
       });
 
-      // Copy bei Hover fuer Inline-Code
+      // Copy bei Hover fürInline-Code
       document.querySelectorAll(".readme-body code:not(pre code)").forEach((code) => {
         if ((code as HTMLElement).dataset.copyReady) return;
         (code as HTMLElement).dataset.copyReady = "1";
