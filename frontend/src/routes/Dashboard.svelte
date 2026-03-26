@@ -8,6 +8,7 @@
   import StatsBar from "../components/StatsBar.svelte";
   import AskPanel from "../components/AskPanel.svelte";
   import SettingsView from "../components/SettingsView.svelte";
+  import InfoOverlay from "../components/InfoOverlay.svelte";
   import SvelteMarkdown, { Html } from "@humanspeak/svelte-markdown";
   const mdRenderers = { html: Html };
   import { navigate } from "../lib/router";
@@ -25,6 +26,7 @@
   let viewMode: "grid" | "list" = $state("grid");
   let scanRoots: string[] = $state([]);
   let showSettings = $state(false);
+  let showInfo = $state(false);
 
   // KI-Antwort im Content-Bereich
   let askAnswer = $state("");
@@ -224,6 +226,12 @@
         >
           <i class="fa-solid fa-gear mr-2 w-4 text-center"></i>Einstellungen
         </button>
+        <button
+          onclick={() => showInfo = true}
+          class="flex w-full items-center rounded-md px-2 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+        >
+          <i class="fa-solid fa-circle-info mr-2 w-4 text-center"></i>Info
+        </button>
       </div>
     </aside>
 
@@ -347,3 +355,7 @@
     </main>
   </div>
 </div>
+
+{#if showInfo}
+  <InfoOverlay onClose={() => showInfo = false} />
+{/if}
