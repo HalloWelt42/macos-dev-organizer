@@ -286,6 +286,24 @@
           {/if}
         </div>
       </div>
+
+      <!-- Übersetzungs-Prompt -->
+      <details class="mt-4">
+        <summary class="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
+          <i class="fa-solid fa-file-lines mr-1"></i>Übersetzungs-Prompt anzeigen
+        </summary>
+        <pre class="mt-2 max-h-48 overflow-y-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-600 dark:bg-slate-900 dark:text-slate-400">Übersetze die folgende README-Datei ins Deutsche.
+
+ABSOLUTE REGELN (Verstoß = fehlerhaft):
+1. Code-Blöcke (``` ... ```) werden KOMPLETT UNVERÄNDERT übernommen.
+2. Inline-Code (`...`) wird KOMPLETT UNVERÄNDERT übernommen.
+3. Markdown-Formatierung EXAKT beibehalten.
+4. Fachbegriffe bleiben Englisch.
+5. Produkt-/Projektnamen, URLs, Pfade, Dateinamen unverändert.
+6. Badge-Links und Shield-URLs 1:1 übernehmen.
+7. Natürlich klingend, nicht maschinell.
+8. VOLLSTÄNDIGE README übersetzen, nichts weglassen.</pre>
+      </details>
     {/if}
   </section>
 

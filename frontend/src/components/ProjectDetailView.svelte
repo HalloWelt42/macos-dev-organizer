@@ -505,7 +505,16 @@
 
     translateReadme(
       project.id,
-      (data) => { translatedText = data.full; translateStats = data.stats; showTranslation = true; },
+      (data) => {
+        translatedText = data.full;
+        translateStats = data.stats;
+        showTranslation = true;
+        // Auto-Scroll ans Ende beim Übersetzen
+        setTimeout(() => {
+          const el = document.querySelector(".readme-body");
+          if (el) el.scrollTop = el.scrollHeight;
+        }, 50);
+      },
       (data) => { translatedText = data.full; translating = false; showTranslation = true; },
       (err) => { console.error("Übersetzung fehlgeschlagen:", err); translating = false; }
     );
