@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { onRouteChange, projectIdFromPath, currentPath } from "./lib/router";
+  import { onRouteChange, parseRoute, currentPath, type Route } from "./lib/router";
   import Dashboard from "./routes/Dashboard.svelte";
 
   let path = $state(currentPath());
-  let projectId = $derived(projectIdFromPath(path));
+  let route: Route = $derived(parseRoute(path));
 
   onRouteChange(() => {
     path = currentPath();
@@ -11,5 +11,5 @@
 </script>
 
 <div class="h-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
-  <Dashboard selectedProjectIdFromRoute={projectId} />
+  <Dashboard {route} />
 </div>

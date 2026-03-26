@@ -11,10 +11,13 @@
   import InfoView from "../components/InfoView.svelte";
   import SvelteMarkdown, { Html } from "@humanspeak/svelte-markdown";
   const mdRenderers = { html: Html };
-  import { navigate } from "../lib/router";
+  import { navigate, type Route } from "../lib/router";
 
-  let { selectedProjectIdFromRoute = null }: { selectedProjectIdFromRoute?: number | null } = $props();
-  let selectedProjectId: number | null = $derived(selectedProjectIdFromRoute);
+  let { route }: { route: Route } = $props();
+  let selectedProjectId: number | null = $derived(route.page === "project" ? route.projectId ?? null : null);
+  let showSettings = $derived(route.page === "settings");
+  let showInfo = $derived(route.page === "info");
+  let infoTab = $derived(route.infoTab || "info");
 
   let projects: Project[] = $state([]);
   let stats: Stats = $state({ total: 0, by_type: {}, last_scan: "" });
@@ -25,9 +28,6 @@
   let highlightIds: Set<number> = $state(new Set());
   let viewMode: "grid" | "list" = $state("grid");
   let scanRoots: string[] = $state([]);
-  let showSettings = $state(false);
-  let showInfo = $state(false);
-  let infoTab = $state("info");
   let appVersion = $state("");
   let backendOnline = $state(false);
   let llmOnline = $state(false);
@@ -77,9 +77,7 @@
 
   /** Zurück zur Projektliste (Einstellungen/Detail schliessen). */
   function showProjectList() {
-    showSettings = false;
-    showInfo = false;
-    selectedProjectId = null;
+    navigate("/");
   }
 
   function handleSearch(q: string) {
@@ -142,7 +140,7 @@
 <div class="flex h-screen flex-col">
   <!-- Header: kompakt -->
   <header class="shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-2 dark:border-slate-700 dark:bg-slate-900">
-    <StatsBar {stats} onRescan={handleRescan} onDonate={() => { showInfo = true; showSettings = false; infoTab = "bedanken"; }} />
+    <StatsBar {stats} onRescan={handleRescan} onDonate={() => navigate("/info/bedanken")} />
     <!-- Suche + KI nebeneinander, gleich aufgeteilt -->
     <div class="mt-2 grid grid-cols-2 gap-3">
       <SearchBar bind:value={searchQuery} onSearch={handleSearch} />
@@ -233,14 +231,14 @@
       <!-- Einstellungen -->
       <div class="mt-4 border-t border-slate-200 pt-3 dark:border-slate-700">
         <button
-          onclick={() => { showSettings = !showSettings; showInfo = false; }}
+          onclick={() => navigate(showSettings ? "/" : "/settings")}
           class="flex w-full items-center rounded-md px-2 py-1.5 text-xs transition-colors
                  {showSettings ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'}"
         >
           <i class="fa-solid fa-gear mr-2 w-4 text-center"></i>Einstellungen
         </button>
         <button
-          onclick={() => { showInfo = !showInfo; showSettings = false; infoTab = "info"; }}
+          onclick={() => navigate(showInfo ? "/" : "/info")}
           class="flex w-full items-center rounded-md px-2 py-1.5 text-xs transition-colors
                  {showInfo ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'}"
         >

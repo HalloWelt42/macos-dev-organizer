@@ -5,6 +5,12 @@
 
 type Listener = () => void;
 
+export type Route = {
+  page: "dashboard" | "project" | "settings" | "info";
+  projectId?: number;
+  infoTab?: string;
+};
+
 let _currentPath = window.location.pathname;
 let _listeners: Listener[] = [];
 
@@ -13,11 +19,25 @@ export function currentPath(): string {
   return _currentPath;
 }
 
-/** Projekt-ID aus dem Pfad extrahieren (z.B. /project/42 -> 42). */
-export function projectIdFromPath(path?: string): number | null {
+/** Route aus dem Pfad parsen. */
+export function parseRoute(path?: string): Route {
   const p = path ?? _currentPath;
-  const match = p.match(/^\/project\/(\d+)$/);
-  return match ? parseInt(match[1], 10) : null;
+
+  const projectMatch = p.match(/^\/project\/(\d+)$/);
+  if (projectMatch) return { page: "project", projectId: parseInt(projectMatch[1], 10) };
+
+  if (p === "/settings") return { page: "settings" };
+
+  const infoMatch = p.match(/^\/info(?:\/(.+))?$/);
+  if (infoMatch) return { page: "info", infoTab: infoMatch[1] || "info" };
+
+  return { page: "dashboard" };
+}
+
+/** Projekt-ID aus dem Pfad extrahieren (Kompatibilität). */
+export function projectIdFromPath(path?: string): number | null {
+  const route = parseRoute(path);
+  return route.projectId ?? null;
 }
 
 /** Navigieren (pushState). */
