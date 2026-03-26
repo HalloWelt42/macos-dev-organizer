@@ -2,6 +2,8 @@
 @plugin "@tailwindcss/typography";
 @import "highlight.js/styles/github-dark.min.css";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 button, [role="button"] {
   cursor: pointer;
 }

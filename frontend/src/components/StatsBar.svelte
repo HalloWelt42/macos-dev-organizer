@@ -4,6 +4,13 @@
 
   let { stats, onRescan, onDonate }: { stats: Stats; onRescan: () => void; onDonate?: () => void } = $props();
   let scanning = $state(false);
+  let dark = $state(typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  function toggleTheme() {
+    dark = !dark;
+    document.documentElement.classList.toggle("dark", dark);
+    document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  }
 
   async function handleRescan() {
     scanning = true;
@@ -27,15 +34,26 @@
     </button>
     <span class="hidden text-lg font-semibold text-slate-700 sm:inline dark:text-slate-200">Lokale Projekte auf dem Mac organisieren</span>
   </div>
-  <button
-    onclick={handleRescan}
-    disabled={scanning}
-    class="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 transition-colors
-           hover:border-amber-300 hover:text-amber-700
-           disabled:opacity-50
-           dark:border-slate-700 dark:text-slate-400 dark:hover:border-amber-600 dark:hover:text-amber-300"
-  >
-    <i class="fa-solid fa-arrows-rotate {scanning ? 'animate-spin' : ''}"></i>
-    {scanning ? "Scanne..." : "Neu scannen"}
-  </button>
+  <div class="flex items-center gap-2">
+    <button
+      onclick={handleRescan}
+      disabled={scanning}
+      class="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 transition-colors
+             hover:border-amber-300 hover:text-amber-700
+             disabled:opacity-50
+             dark:border-slate-700 dark:text-slate-400 dark:hover:border-amber-600 dark:hover:text-amber-300"
+    >
+      <i class="fa-solid fa-arrows-rotate {scanning ? 'animate-spin' : ''}"></i>
+      {scanning ? "Scanne..." : "Neu scannen"}
+    </button>
+    <button
+      onclick={toggleTheme}
+      class="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-600 transition-colors
+             hover:border-amber-300 hover:text-amber-700
+             dark:border-slate-700 dark:text-slate-400 dark:hover:border-amber-600 dark:hover:text-amber-300"
+      title={dark ? "Light Mode" : "Dark Mode"}
+    >
+      <i class="fa-solid {dark ? 'fa-sun' : 'fa-moon'}"></i>
+    </button>
+  </div>
 </div>
