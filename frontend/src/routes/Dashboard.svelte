@@ -289,7 +289,7 @@
     </aside>
 
     <!-- Content: bei Detail kein eigenes Scroll, Detail managed das selbst -->
-    <main class="flex-1 {selectedProjectId && !showSettings && !showInfo ? 'overflow-hidden p-3' : 'overflow-y-auto p-4'}">
+    <main class="flex-1 min-h-0 {selectedProjectId || (askAnswer || askLoading) ? 'overflow-hidden p-3' : showSettings || showInfo ? 'overflow-hidden p-4' : 'overflow-y-auto p-4'}">
       {#if showInfo}
         <InfoView initialTab={infoTab} />
       {:else if showSettings}
@@ -298,11 +298,12 @@
         <ProjectDetailView projectId={selectedProjectId} allProjectIds={projects.map(p => p.id)} />
       {:else if askAnswer || askLoading}
         <!-- KI-Antwort im Content-Bereich -->
-        <div class="flex gap-4 lg:flex-row flex-col">
+        <div class="flex h-full gap-4 lg:flex-row flex-col min-h-0">
           <!-- Antwort (62%) -->
-          <div class="lg:w-[62%] min-w-0">
-            <div class="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
-              <div class="flex items-center justify-between border-b border-slate-200 px-4 py-2 dark:border-slate-700">
+          <div class="lg:w-[62%] min-w-0 flex flex-col min-h-0">
+            <div class="flex flex-col min-h-0 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+              <!-- Sticky Header -->
+              <div class="shrink-0 flex items-center justify-between border-b border-slate-200 px-4 py-2 dark:border-slate-700">
                 <div class="flex items-center gap-2">
                   <i class="fa-solid fa-robot text-amber-500"></i>
                   <span class="text-sm font-medium text-slate-500">KI-Antwort</span>
@@ -322,7 +323,8 @@
                   </button>
                 </div>
               </div>
-              <div class="max-h-[calc(100vh-14rem)] overflow-y-auto p-4">
+              <!-- Scrollbarer Inhalt -->
+              <div class="min-h-0 flex-1 overflow-y-auto p-4">
                 <div class="prose prose-sm max-w-prose dark:prose-invert
                             prose-headings:text-slate-800 dark:prose-headings:text-slate-200
                             prose-a:text-amber-600 dark:prose-a:text-amber-400
@@ -335,8 +337,9 @@
 
           <!-- Referenzierte Projekte (38%) -->
           {#if highlightIds.size > 0}
-            <div class="lg:w-[38%] space-y-2">
-              <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Referenzierte Projekte</h3>
+            <div class="lg:w-[38%] flex flex-col min-h-0">
+              <h3 class="shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Referenzierte Projekte</h3>
+              <div class="min-h-0 flex-1 overflow-y-auto space-y-2">
               {#each projects.filter(p => highlightIds.has(p.id)) as project (project.id)}
                 <button
                   onclick={() => navigate(`/project/${project.id}`)}
@@ -357,6 +360,7 @@
                   <i class="fa-solid fa-chevron-right mt-1 text-xs text-slate-400"></i>
                 </button>
               {/each}
+              </div>
             </div>
           {/if}
         </div>
