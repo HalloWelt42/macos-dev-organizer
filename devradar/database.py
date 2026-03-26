@@ -52,6 +52,18 @@ class Database:
                 projects_removed INTEGER DEFAULT 0
             );
         """)
+        self.conn.executescript("""
+            CREATE TABLE IF NOT EXISTS ask_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                question TEXT NOT NULL,
+                answer TEXT NOT NULL,
+                project_ids TEXT DEFAULT '[]',
+                tokens INTEGER DEFAULT 0,
+                elapsed REAL DEFAULT 0,
+                created_at TEXT NOT NULL
+            );
+        """)
+
         # readme_translated Spalte hinzufügen falls nicht vorhanden
         try:
             self.conn.execute("ALTER TABLE projects ADD COLUMN readme_translated TEXT DEFAULT ''")

@@ -589,6 +589,86 @@ def stop_scan():
     return {"status": "ok"}
 
 
+@app.get("/api/ask/history")
+def get_ask_history(q: str = Query("", description="Suchbegriff")):
+    """KI-Verlauf: Alle bisherigen Fragen und Antworten."""
+    assert db is not None
+    if q:
+        rows = db.conn.execute(
+            "SELECT id, question, answer, project_ids, tokens, elapsed, created_at FROM ask_history WHERE question LIKE ? ORDER BY created_at DESC LIMIT 50",
+            (f"%{q}%",)
+        ).fetchall()
+    else:
+        rows = db.conn.execute(
+            "SELECT id, question, answer, project_ids, tokens, elapsed, created_at FROM ask_history ORDER BY created_at DESC LIMIT 50"
+        ).fetchall()
+    import json as _json
+    return [
+        {
+            "id": r["id"],
+            "question": r["question"],
+            "answer": r["answer"],
+            "project_ids": _json.loads(r["project_ids"]) if r["project_ids"] else [],
+            "tokens": r["tokens"],
+            "elapsed": r["elapsed"],
+            "created_at": r["created_at"],
+        }
+        for r in rows
+    ]
+
+
+@app.get("/api/ask/history/{entry_id}")
+def get_ask_entry(entry_id: int):
+    """Einzelnen KI-Verlauf-Eintrag laden."""
+    assert db is not None
+    row = db.conn.execute(
+        "SELECT id, question, answer, project_ids, tokens, elapsed, created_at FROM ask_history WHERE id = ?",
+        (entry_id,)
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Eintrag nicht gefunden")
+    import json as _json
+    return {
+        "id": row["id"],
+        "question": row["question"],
+        "answer": row["answer"],
+        "project_ids": _json.loads(row["project_ids"]) if row["project_ids"] else [],
+        "tokens": row["tokens"],
+        "elapsed": row["elapsed"],
+        "created_at": row["created_at"],
+    }
+
+
+@app.post("/api/ask/history")
+def save_ask_entry(data: dict):
+    """KI-Antwort im Verlauf speichern."""
+    assert db is not None
+    from datetime import datetime, timezone
+    import json as _json
+    db.conn.execute(
+        "INSERT INTO ask_history (question, answer, project_ids, tokens, elapsed, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        (
+            data.get("question", ""),
+            data.get("answer", ""),
+            _json.dumps(data.get("project_ids", [])),
+            data.get("tokens", 0),
+            data.get("elapsed", 0),
+            datetime.now(timezone.utc).isoformat(),
+        )
+    )
+    db.conn.commit()
+    return {"status": "ok", "id": db.conn.execute("SELECT last_insert_rowid()").fetchone()[0]}
+
+
+@app.delete("/api/ask/history/{entry_id}")
+def delete_ask_entry(entry_id: int):
+    """KI-Verlauf-Eintrag löschen."""
+    assert db is not None
+    db.conn.execute("DELETE FROM ask_history WHERE id = ?", (entry_id,))
+    db.conn.commit()
+    return {"status": "ok"}
+
+
 @app.get("/api/prompts")
 def get_prompts():
     """Liefert alle verwendeten Prompts zur Anzeige in den Einstellungen."""
