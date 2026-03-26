@@ -8,7 +8,7 @@
 
   let version = $state("");
   let showDonate = $state(false);
-  let activeTab = $state(initialTab);
+  let activeTab = $derived(initialTab);
   let prompts: { id: string; name: string; description: string; prompt: string }[] = $state([]);
 
   // Markdown-Inhalte
@@ -69,7 +69,7 @@
   <div class="mb-5 flex justify-center gap-1">
     {#each tabs as tab}
       <button
-        onclick={() => { activeTab = tab.id; navigate(`/info/${tab.id}`, true); }}
+        onclick={() => navigate(`/info/${tab.id}`)}
         class="flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium transition-colors
                {activeTab === tab.id
                  ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
