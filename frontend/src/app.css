@@ -4,6 +4,24 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Light Mode: Sanftere, gedämpfte Farben */
+:root:not(.dark) {
+  color-scheme: light;
+}
+
+html:not(.dark) body {
+  background: #f5f5f0;
+}
+
+html:not(.dark) header,
+html:not(.dark) aside {
+  background: #f0efe8 !important;
+}
+
+html:not(.dark) main {
+  background: #f5f5f0;
+}
+
 button, [role="button"] {
   cursor: pointer;
 }
