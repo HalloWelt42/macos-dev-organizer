@@ -31,26 +31,13 @@
       const ytMatch = href.match(YT_RE);
       if (ytMatch) {
         const vid = ytMatch[1];
-        return `<div class="yt-thumb-wrap my-3 inline-block rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-shadow" data-yt-id="${vid}">
-          <div class="relative">
-            <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px]" />
-            <div class="absolute top-2 right-2 pointer-events-none select-none">
-              <div class="flex items-center gap-1 rounded bg-red-600/90 px-2 py-0.5 text-white text-[10px] font-medium shadow">
-                <i class="fa-brands fa-youtube"></i> YouTube
-              </div>
-            </div>
-            <div class="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-black/80 px-2.5 py-1.5 text-[10px]">
-              <span class="yt-copy-link cursor-pointer text-slate-300 hover:text-white" data-copy="https://www.youtube.com/watch?v=${vid}" title="YouTube-Link kopieren">
-                <i class="fa-solid fa-link mr-0.5"></i>Link kopieren
-              </span>
-              <span class="text-slate-600">|</span>
-              <span class="yt-copy-id cursor-pointer font-mono font-semibold text-amber-400 hover:text-amber-300" data-copy="${vid}" title="Video-ID kopieren">
-                ${vid} <i class="fa-solid fa-copy ml-0.5 text-[9px] text-amber-400/60"></i>
-              </span>
-              <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="ml-auto text-slate-300 hover:text-white no-underline" onclick="event.stopPropagation()" title="Auf YouTube öffnen">
-                <i class="fa-solid fa-arrow-up-right-from-square mr-0.5"></i>Öffnen
-              </a>
-            </div>
+        return `<div class="yt-thumb-wrap relative my-3 inline-block cursor-pointer overflow-hidden rounded" data-yt-id="${vid}">
+          <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block w-[280px] rounded" />
+          <span class="absolute top-1.5 right-1.5 pointer-events-none select-none rounded bg-red-600/90 px-1.5 py-0.5 text-white text-[9px] font-medium"><i class="fa-brands fa-youtube"></i> YouTube</span>
+          <div class="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-black/70 px-2 py-1 text-[10px]">
+            <span class="yt-copy-link cursor-pointer text-slate-300 hover:text-white" data-copy="https://www.youtube.com/watch?v=${vid}" title="YouTube-Link kopieren"><i class="fa-solid fa-link mr-0.5"></i>Link</span>
+            <span class="yt-copy-id cursor-pointer font-mono text-amber-400 hover:text-amber-300" data-copy="${vid}" title="Video-ID kopieren">${vid}</span>
+            <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="ml-auto text-slate-300 hover:text-white no-underline" onclick="event.stopPropagation()" title="Auf YouTube öffnen"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
           </div>
         </div>`;
       }
@@ -794,12 +781,6 @@
             <span class="text-xs">{project.last_modified ? new Date(project.last_modified).toLocaleDateString("de-DE") : "-"}</span>
           </div>
         </div>
-        {#if project.metadata && Object.keys(project.metadata).length > 0}
-          <div class="min-h-0 flex-1 flex flex-col px-4 pb-4">
-            <h4 class="mb-1 shrink-0 text-xs text-slate-500">Weitere Details</h4>
-            <pre class="min-h-0 flex-1 overflow-y-auto rounded-md bg-slate-50 p-2 text-[10px] text-slate-500 dark:bg-slate-900">{JSON.stringify(project.metadata, null, 2)}</pre>
-          </div>
-        {/if}
       </div>
     </div>
   </div>

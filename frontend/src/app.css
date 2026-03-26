@@ -1,6 +1,28 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-@import "highlight.js/styles/github-dark.min.css";
+
+/* Highlight.js: Light Theme als Standard */
+@import "highlight.js/styles/github.min.css";
+
+/* Highlight.js: Dark Theme nur im Dark Mode */
+.dark .hljs {
+  background: rgb(15 23 42) !important;
+  color: #c9d1d9;
+}
+
+.dark .hljs-keyword { color: #ff7b72; }
+.dark .hljs-string { color: #a5d6ff; }
+.dark .hljs-comment { color: #8b949e; }
+.dark .hljs-function { color: #d2a8ff; }
+.dark .hljs-number { color: #79c0ff; }
+.dark .hljs-title { color: #d2a8ff; }
+.dark .hljs-built_in { color: #ffa657; }
+.dark .hljs-attr { color: #79c0ff; }
+.dark .hljs-variable { color: #ffa657; }
+.dark .hljs-type { color: #ff7b72; }
+.dark .hljs-literal { color: #79c0ff; }
+.dark .hljs-meta { color: #8b949e; }
+.dark .hljs-selector-class { color: #d2a8ff; }
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -15,11 +37,29 @@ html:not(.dark) body {
 
 html:not(.dark) header,
 html:not(.dark) aside {
-  background: #f0efe8 !important;
+  background: #e8e6de !important;
 }
 
 html:not(.dark) main {
-  background: #f5f5f0;
+  background: #eae8e0;
+}
+
+/* Cards im Light Mode */
+html:not(.dark) .bg-white {
+  background: #f5f3ec !important;
+}
+
+/* Buttons und Tags im Light Mode: Mehr Kontrast */
+html:not(.dark) .bg-slate-100 {
+  background: #ddd9cc !important;
+}
+
+html:not(.dark) .bg-slate-50 {
+  background: #eae7dc !important;
+}
+
+html:not(.dark) .border-slate-200 {
+  border-color: #ccc8b8 !important;
 }
 
 button, [role="button"] {
@@ -45,7 +85,7 @@ html, body, #app {
 }
 
 /* Inline-Code -- Dark Mode */
-@media (prefers-color-scheme: dark) {
+.dark {
   .prose code:not(pre code) {
     background: rgb(30 41 59);
     color: #f59e0b;
@@ -71,13 +111,19 @@ html, body, #app {
 
 /* Code-Bloecke -- Light Mode */
 .prose pre {
-  background: rgb(248 250 252) !important;
-  border: 1px solid rgb(226 232 240);
+  background: #f0eee6 !important;
+  border: 1px solid #ddd9cc;
   border-radius: 0.5rem;
+  color: #1e293b !important;
+}
+
+html:not(.dark) .prose pre code,
+html:not(.dark) .hljs {
+  color: #24292e !important;
 }
 
 /* Code-Bloecke -- Dark Mode */
-@media (prefers-color-scheme: dark) {
+.dark {
   .prose pre {
     background: rgb(15 23 42) !important;
     border: 1px solid rgb(51 65 85);
@@ -99,25 +145,25 @@ html, body, #app {
 }
 
 .prose th {
-  background: rgb(241 245 249);
+  background: #e8e6de;
   font-weight: 600;
   text-align: left;
 }
 
 .prose td, .prose th {
   padding: 0.5rem 0.75rem;
-  border: 1px solid rgb(226 232 240);
+  border: 1px solid #ddd9cc;
 }
 
 .prose tbody tr:nth-child(even) {
-  background: rgb(248 250 252);
+  background: #f0eee6;
 }
 
 .prose tbody tr:hover {
-  background: rgb(254 252 232);
+  background: #e8e4d8;
 }
 
-@media (prefers-color-scheme: dark) {
+.dark {
   .prose th {
     background: rgb(30 41 59);
   }

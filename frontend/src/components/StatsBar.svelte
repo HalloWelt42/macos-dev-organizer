@@ -25,9 +25,9 @@
 
 <div class="flex items-center justify-between">
   <div class="flex items-center gap-4">
-    <div class="flex items-center gap-2 rounded-lg bg-amber-100 px-3 py-1.5 dark:bg-amber-900">
-      <i class="fa-solid fa-wrench text-amber-600 dark:text-amber-400"></i>
-      <span class="text-lg font-bold text-amber-800 dark:text-amber-200">DevRadar</span>
+    <div class="flex items-center gap-2 rounded-lg bg-amber-900 px-3 py-1.5">
+      <i class="fa-solid fa-wrench text-amber-400"></i>
+      <span class="text-lg font-bold text-amber-200">DevRadar</span>
     </div>
     <button onclick={() => onDonate?.()} class="ml-1" title="Danke sagen">
       <i class="fa-solid fa-heart text-red-500" style="animation: heartbeat 1.5s ease-in-out infinite; filter: drop-shadow(0 0 3px rgba(239,68,68,0.4));"></i>
