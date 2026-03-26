@@ -45,6 +45,7 @@ class LLMConfig:
     enabled: bool = False
     base_url: str = "http://localhost:1234/v1"
     model: str = "qwen3-next-80b-a3b-instruct-mlx"
+    timeout: int = 14400
 
 
 @dataclass
@@ -82,6 +83,7 @@ class Config:
         lines.append(f"enabled = {'true' if self.llm.enabled else 'false'}")
         lines.append(f'base_url = "{self.llm.base_url}"')
         lines.append(f'model = "{self.llm.model}"')
+        lines.append(f"timeout = {self.llm.timeout}")
         lines.append("")
 
         with open(path, "w", encoding="utf-8") as f:
@@ -119,6 +121,7 @@ class Config:
                 enabled=llm.get("enabled", True),
                 base_url=llm.get("base_url", config.llm.base_url),
                 model=llm.get("model", config.llm.model),
+                timeout=llm.get("timeout", config.llm.timeout),
             )
 
         return config

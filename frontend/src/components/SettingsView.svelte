@@ -8,6 +8,7 @@
   let llmUrl = $state("http://localhost:1234/v1");
   let llmModel = $state("");
   let llmModels: string[] = $state([]);
+  let llmTimeout = $state(14400);
   let saving = $state(false);
 
   // Ordner-Browser
@@ -32,6 +33,7 @@
       llmEnabled = llmData.enabled ?? false;
       llmUrl = llmData.base_url ?? "http://localhost:1234/v1";
       llmModel = llmData.model ?? "";
+      llmTimeout = llmData.timeout ?? 14400;
     } catch {}
     if (llmEnabled && llmUrl) loadModels();
   }
@@ -65,7 +67,7 @@
         fetch("/api/config/llm", {
           method: "POST",
           headers: hdrs,
-          body: JSON.stringify({ enabled: llmEnabled, base_url: llmUrl, model: llmModel }),
+          body: JSON.stringify({ enabled: llmEnabled, base_url: llmUrl, model: llmModel, timeout: llmTimeout }),
         }),
       ]);
       onSave();
@@ -287,6 +289,19 @@
         </div>
       </div>
 
+      <div>
+        <label class="mb-1 block text-xs font-medium text-slate-500" for="llm-timeout">Timeout (Sekunden)</label>
+        <input
+          id="llm-timeout"
+          type="number"
+          bind:value={llmTimeout}
+          min="60"
+          step="60"
+          class="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none
+                 focus:border-amber-400 dark:border-slate-600 dark:bg-slate-900"
+        />
+        <p class="mt-1 text-[10px] text-slate-400">{Math.floor(llmTimeout / 3600)} Std. {Math.floor((llmTimeout % 3600) / 60)} Min.</p>
+      </div>
     {/if}
   </section>
 

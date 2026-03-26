@@ -41,7 +41,7 @@ async def stream_llm(
     tokens = 0
     start_time = time.monotonic()
 
-    async with httpx.AsyncClient(timeout=14400.0) as client:
+    async with httpx.AsyncClient(timeout=float(llm_config.timeout)) as client:
         async with client.stream(
             "POST",
             f"{llm_config.base_url}/chat/completions",
@@ -120,7 +120,7 @@ async def ask_llm(
     projects_json = json.dumps(projects, ensure_ascii=False, indent=None)
     system = SYSTEM_PROMPT.format(projects_json=projects_json)
 
-    async with httpx.AsyncClient(timeout=14400.0) as client:
+    async with httpx.AsyncClient(timeout=float(llm_config.timeout)) as client:
         response = await client.post(
             f"{llm_config.base_url}/chat/completions",
             json={

@@ -469,6 +469,7 @@ def get_llm_config():
         "enabled": config.llm.enabled,
         "base_url": config.llm.base_url,
         "model": config.llm.model,
+        "timeout": config.llm.timeout,
     }
 
 
@@ -480,6 +481,7 @@ def set_llm_config(body: dict):
         enabled=body.get("enabled", config.llm.enabled),
         base_url=body.get("base_url", config.llm.base_url),
         model=body.get("model", config.llm.model),
+        timeout=body.get("timeout", config.llm.timeout),
     )
     config.save()
     return {
@@ -487,6 +489,7 @@ def set_llm_config(body: dict):
         "enabled": config.llm.enabled,
         "base_url": config.llm.base_url,
         "model": config.llm.model,
+        "timeout": config.llm.timeout,
     }
 
 
