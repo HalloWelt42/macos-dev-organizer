@@ -84,6 +84,7 @@
             <!-- svelte-ignore a11y_no_static_element_interactions -->
             <span
               onclick={(e) => { e.stopPropagation(); deleteEntry(entry.id); }}
+              onkeydown={(e) => { if (e.key === "Enter") { e.stopPropagation(); deleteEntry(entry.id); } }}
               class="shrink-0 cursor-pointer rounded p-1 text-slate-400 hover:text-red-500"
               title="Löschen"
               role="button"

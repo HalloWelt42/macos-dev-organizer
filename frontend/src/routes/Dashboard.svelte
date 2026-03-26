@@ -293,7 +293,7 @@
             <span>v{appVersion}</span>
           {/if}
           <a href="https://github.com/HalloWelt42/macos-dev-organizer" target="_blank" rel="noopener noreferrer"
-            class="text-slate-400 hover:text-amber-500 no-underline">
+            class="text-slate-400 hover:text-amber-500 no-underline" aria-label="GitHub">
             <i class="fa-brands fa-github text-xs"></i>
           </a>
         </div>
