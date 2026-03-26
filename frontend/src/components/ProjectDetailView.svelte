@@ -469,19 +469,30 @@
     return () => window.removeEventListener("keydown", onKey);
   });
 
+  let _loadId = 0;
+
   async function loadProject() {
+    const thisLoad = ++_loadId;
     loading = true;
     error = "";
     try {
-      project = await getProject(projectId);
-      // Gespeicherte Übersetzung laden
+      const result = await getProject(projectId);
+      // Veralteten Request ignorieren (Race Condition)
+      if (thisLoad !== _loadId) return;
+      project = result;
       if (project?.readme_translated) {
         translatedText = project.readme_translated;
       }
     } catch (e) {
+      if (thisLoad !== _loadId) return;
+      // Bei 404 leise zurück zur Liste
+      if (e instanceof Error && e.message.includes("404")) {
+        navigate("/");
+        return;
+      }
       error = e instanceof Error ? e.message : "Projekt nicht gefunden";
     } finally {
-      loading = false;
+      if (thisLoad === _loadId) loading = false;
     }
   }
 
