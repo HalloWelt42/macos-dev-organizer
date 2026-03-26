@@ -115,8 +115,10 @@ def _walk(
         primary.tags = sorted(all_tags)
         primary.metadata = all_meta
         results.append(primary)
+        # Projekt gefunden -- nicht tiefer scannen
+        return
 
-    # Unterverzeichnisse durchlaufen
+    # Unterverzeichnisse durchlaufen (nur wenn kein Projekt gefunden)
     try:
         for child in sorted(path.iterdir()):
             name = child.name

@@ -6,7 +6,7 @@
 
 /* Highlight.js: Dark Theme nur im Dark Mode */
 .dark .hljs {
-  background: rgb(15 23 42) !important;
+  background: rgb(15 23 42);
   color: #c9d1d9;
 }
 
@@ -37,7 +37,7 @@ html:not(.dark) body {
 
 html:not(.dark) header,
 html:not(.dark) aside {
-  background: #e8e6de !important;
+  background: #e8e6de;
 }
 
 html:not(.dark) main {
@@ -46,20 +46,20 @@ html:not(.dark) main {
 
 /* Cards im Light Mode */
 html:not(.dark) .bg-white {
-  background: #f5f3ec !important;
+  background: #f5f3ec;
 }
 
 /* Buttons und Tags im Light Mode: Mehr Kontrast */
 html:not(.dark) .bg-slate-100 {
-  background: #ddd9cc !important;
+  background: #ddd9cc;
 }
 
 html:not(.dark) .bg-slate-50 {
-  background: #eae7dc !important;
+  background: #eae7dc;
 }
 
 html:not(.dark) .border-slate-200 {
-  border-color: #ccc8b8 !important;
+  border-color: #ccc8b8;
 }
 
 button, [role="button"] {
@@ -96,7 +96,7 @@ html, body, #app {
 /* Backtick-Zeichen um Inline-Code ausblenden (Tailwind prose default) */
 .prose code::before,
 .prose code::after {
-  content: none !important;
+  content: none;
 }
 
 /* Inline-Code: Copy-Icon bei Hover */
@@ -110,29 +110,32 @@ html, body, #app {
 }
 
 /* Code-Bloecke -- Light Mode */
-.prose pre {
-  background: #f0eee6 !important;
+html:not(.dark) .prose pre {
+  background: #f0eee6;
   border: 1px solid #ddd9cc;
-  border-radius: 0.5rem;
-  color: #1e293b !important;
+  color: #1e293b;
 }
 
 html:not(.dark) .prose pre code,
 html:not(.dark) .hljs {
-  color: #24292e !important;
+  color: #24292e;
+}
+
+.prose pre {
+  border-radius: 0.5rem;
 }
 
 /* Code-Bloecke -- Dark Mode */
 .dark {
   .prose pre {
-    background: rgb(15 23 42) !important;
+    background: rgb(15 23 42);
     border: 1px solid rgb(51 65 85);
   }
 }
 
 .prose pre code {
-  background: transparent !important;
-  border: none !important;
+  background: transparent;
+  border: none;
   color: inherit;
   padding: 0;
 }
