@@ -43,6 +43,9 @@
 
   // KI-Antwort im Content-Bereich
   let askAnswer = $state("");
+  let askAnswerLinked = $derived(
+    askAnswer.replace(/\[ID:(\d+)\]/g, (_, id) => `[Projekt ${id}](/project/${id})`)
+  );
   let askLoading = $state(false);
   let askStats = $state({ tokens: 0, elapsed: 0, tps: 0 });
   let askFallback = $state(false);
@@ -340,7 +343,7 @@
                             prose-headings:text-slate-800 dark:prose-headings:text-slate-200
                             prose-a:text-amber-600 dark:prose-a:text-amber-400
                             prose-code:rounded prose-code:bg-slate-200 prose-code:px-1 dark:prose-code:bg-slate-800">
-                  <SvelteMarkdown source={askAnswer} renderers={mdRenderers} />
+                  <SvelteMarkdown source={askAnswerLinked} renderers={mdRenderers} />
                 </div>
               </div>
             </div>

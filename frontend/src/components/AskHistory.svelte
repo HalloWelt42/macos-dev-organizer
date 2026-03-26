@@ -112,7 +112,7 @@
           <div class="prose prose-sm max-w-none dark:prose-invert
                       prose-headings:text-slate-800 dark:prose-headings:text-slate-200
                       prose-a:text-amber-600 dark:prose-a:text-amber-400">
-            <SvelteMarkdown source={selected.answer} renderers={mdRenderers} />
+            <SvelteMarkdown source={selected.answer.replace(/\[ID:(\d+)\]/g, (_, id) => `[Projekt ${id}](/project/${id})`)} renderers={mdRenderers} />
           </div>
         </div>
       </div>
