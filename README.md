@@ -1,4 +1,4 @@
-# DevRadar v0.1.0
+# DevRadar v0.2.0
 
 Lokale Projekte auf dem Mac organisieren. DevRadar scannt konfigurierbare Verzeichnisse nach Softwareprojekten, indiziert sie und stellt ein Web-Dashboard bereit.
 

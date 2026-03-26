@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Project, Stats } from "../lib/types";
-  import { getProjects, getStats } from "../lib/api";
+  import { getProjects, getStats, getVersion } from "../lib/api";
   import SearchBar from "../components/SearchBar.svelte";
   import ProjectCard from "../components/ProjectCard.svelte";
   import ProjectListItem from "../components/ProjectListItem.svelte";
@@ -8,7 +8,7 @@
   import StatsBar from "../components/StatsBar.svelte";
   import AskPanel from "../components/AskPanel.svelte";
   import SettingsView from "../components/SettingsView.svelte";
-  import InfoOverlay from "../components/InfoOverlay.svelte";
+  import InfoView from "../components/InfoView.svelte";
   import SvelteMarkdown, { Html } from "@humanspeak/svelte-markdown";
   const mdRenderers = { html: Html };
   import { navigate } from "../lib/router";
@@ -27,6 +27,15 @@
   let scanRoots: string[] = $state([]);
   let showSettings = $state(false);
   let showInfo = $state(false);
+  let infoTab = $state("info");
+  let appVersion = $state("");
+  let backendOnline = $state(false);
+  let llmOnline = $state(false);
+
+  $effect(() => {
+    getVersion().then(v => { appVersion = v; backendOnline = true; }).catch(() => { backendOnline = false; });
+    fetch("/api/llm/models").then(r => { llmOnline = r.ok; }).catch(() => { llmOnline = false; });
+  });
 
   // KI-Antwort im Content-Bereich
   let askAnswer = $state("");
@@ -69,6 +78,7 @@
   /** Zurück zur Projektliste (Einstellungen/Detail schliessen). */
   function showProjectList() {
     showSettings = false;
+    showInfo = false;
     selectedProjectId = null;
   }
 
@@ -132,7 +142,7 @@
 <div class="flex h-screen flex-col">
   <!-- Header: kompakt -->
   <header class="shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-2 dark:border-slate-700 dark:bg-slate-900">
-    <StatsBar {stats} onRescan={handleRescan} />
+    <StatsBar {stats} onRescan={handleRescan} onDonate={() => { showInfo = true; showSettings = false; infoTab = "bedanken"; }} />
     <!-- Suche + KI nebeneinander, gleich aufgeteilt -->
     <div class="mt-2 grid grid-cols-2 gap-3">
       <SearchBar bind:value={searchQuery} onSearch={handleSearch} />
@@ -153,7 +163,10 @@
   <!-- Body: Sidebar + Content -->
   <div class="flex min-h-0 flex-1">
     <!-- Sidebar: Filter + Sortierung -->
-    <aside class="w-48 shrink-0 overflow-y-auto border-r border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900">
+    <aside class="flex w-48 shrink-0 flex-col overflow-y-auto border-r border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900">
+      <!-- Projektanzahl -->
+      <p class="mb-3 text-lg font-bold text-slate-700 dark:text-slate-200">{stats.total} Projekte</p>
+
       <!-- Typ-Filter (Mehrfachauswahl) -->
       <h2 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Typ</h2>
       <div class="space-y-0.5">
@@ -220,24 +233,54 @@
       <!-- Einstellungen -->
       <div class="mt-4 border-t border-slate-200 pt-3 dark:border-slate-700">
         <button
-          onclick={() => { showSettings = !showSettings; }}
+          onclick={() => { showSettings = !showSettings; showInfo = false; }}
           class="flex w-full items-center rounded-md px-2 py-1.5 text-xs transition-colors
                  {showSettings ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'}"
         >
           <i class="fa-solid fa-gear mr-2 w-4 text-center"></i>Einstellungen
         </button>
         <button
-          onclick={() => showInfo = true}
-          class="flex w-full items-center rounded-md px-2 py-1.5 text-xs text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+          onclick={() => { showInfo = !showInfo; showSettings = false; infoTab = "info"; }}
+          class="flex w-full items-center rounded-md px-2 py-1.5 text-xs transition-colors
+                 {showInfo ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200' : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'}"
         >
           <i class="fa-solid fa-circle-info mr-2 w-4 text-center"></i>Info
         </button>
       </div>
+
+      <!-- Footer: Status + Version + GitHub -->
+      <div class="mt-auto border-t border-slate-200 px-2 py-2 dark:border-slate-700">
+        <div class="space-y-0.5 text-[10px] text-slate-400">
+          <div class="flex items-center gap-1.5">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]"></span>
+            <span>Frontend</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="inline-block h-1.5 w-1.5 rounded-full {backendOnline ? 'bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]' : 'bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.6)]'}"></span>
+            <span>Backend</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="inline-block h-1.5 w-1.5 rounded-full {llmOnline ? 'bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]' : 'bg-slate-500'}"></span>
+            <span>LLM-Server</span>
+          </div>
+        </div>
+        <div class="mt-2 flex items-center justify-between text-[10px] text-slate-500">
+          {#if appVersion}
+            <span>v{appVersion}</span>
+          {/if}
+          <a href="https://github.com/HalloWelt42/macos-dev-organizer" target="_blank" rel="noopener noreferrer"
+            class="text-slate-400 hover:text-amber-500 no-underline">
+            <i class="fa-brands fa-github text-xs"></i>
+          </a>
+        </div>
+      </div>
     </aside>
 
     <!-- Content: bei Detail kein eigenes Scroll, Detail managed das selbst -->
-    <main class="flex-1 {selectedProjectId && !showSettings ? 'overflow-hidden p-3' : 'overflow-y-auto p-4'}">
-      {#if showSettings}
+    <main class="flex-1 {selectedProjectId && !showSettings && !showInfo ? 'overflow-hidden p-3' : 'overflow-y-auto p-4'}">
+      {#if showInfo}
+        <InfoView initialTab={infoTab} />
+      {:else if showSettings}
         <SettingsView onSave={handleSettingsSaved} />
       {:else if selectedProjectId}
         <ProjectDetailView projectId={selectedProjectId} allProjectIds={projects.map(p => p.id)} />
@@ -332,7 +375,6 @@
           <p>Keine Projekte gefunden.</p>
         </div>
       {:else}
-        <p class="mb-3 text-sm text-slate-400">{projects.length} Projekte</p>
 
         {#if viewMode === "grid"}
           <div class="grid gap-3" style="grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))">
@@ -356,6 +398,3 @@
   </div>
 </div>
 
-{#if showInfo}
-  <InfoOverlay onClose={() => showInfo = false} />
-{/if}

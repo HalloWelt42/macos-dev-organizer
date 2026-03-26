@@ -1,6 +1,6 @@
 [project]
 name = "devradar"
-version = "0.1.0"
+version = "0.2.0"
 description = "Lokales Projekt-Dashboard mit Suche"
 requires-python = ">=3.12"
 dependencies = [

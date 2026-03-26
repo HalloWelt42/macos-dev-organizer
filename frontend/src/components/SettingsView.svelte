@@ -36,14 +36,20 @@
     if (llmEnabled && llmUrl) loadModels();
   }
 
+  let llmStatus: "idle" | "loading" | "ok" | "error" = $state("idle");
+
   async function loadModels() {
+    llmStatus = "loading";
     try {
       const res = await fetch("/api/llm/models");
       const data = await res.json();
       llmModels = data.models || [];
+      llmStatus = llmModels.length > 0 ? "ok" : "error";
     } catch {
       llmModels = [];
+      llmStatus = "error";
     }
+    setTimeout(() => { if (llmStatus !== "loading") llmStatus = "idle"; }, 3000);
   }
 
   async function saveAll() {
@@ -233,11 +239,22 @@
             />
             <button
               onclick={loadModels}
-              class="rounded-md border border-slate-200 px-3 py-2 text-xs text-slate-600 hover:border-amber-300 hover:text-amber-700
-                     dark:border-slate-600 dark:text-slate-400"
+              disabled={llmStatus === "loading"}
+              class="rounded-md border px-3 py-2 text-xs transition-colors
+                     {llmStatus === 'ok' ? 'border-green-300 text-green-600 dark:border-green-700 dark:text-green-400' :
+                      llmStatus === 'error' ? 'border-red-300 text-red-600 dark:border-red-700 dark:text-red-400' :
+                      'border-slate-200 text-slate-600 hover:border-amber-300 hover:text-amber-700 dark:border-slate-600 dark:text-slate-400'}"
               title="Verbindung testen und Modelle laden"
             >
-              <i class="fa-solid fa-plug mr-1"></i>Verbinden
+              {#if llmStatus === "loading"}
+                <i class="fa-solid fa-spinner animate-spin mr-1"></i>Teste...
+              {:else if llmStatus === "ok"}
+                <i class="fa-solid fa-check mr-1"></i>{llmModels.length} Modelle
+              {:else if llmStatus === "error"}
+                <i class="fa-solid fa-xmark mr-1"></i>Keine Verbindung
+              {:else}
+                <i class="fa-solid fa-plug mr-1"></i>Verbinden
+              {/if}
             </button>
           </div>
         </div>

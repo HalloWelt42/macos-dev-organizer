@@ -1,14 +1,9 @@
 <script lang="ts">
-  import { rescan, getVersion } from "../lib/api";
+  import { rescan } from "../lib/api";
   import type { Stats } from "../lib/types";
 
-  let { stats, onRescan }: { stats: Stats; onRescan: () => void } = $props();
+  let { stats, onRescan, onDonate }: { stats: Stats; onRescan: () => void; onDonate?: () => void } = $props();
   let scanning = $state(false);
-  let version = $state("");
-
-  $effect(() => {
-    getVersion().then((v) => (version = v)).catch(() => {});
-  });
 
   async function handleRescan() {
     scanning = true;
@@ -26,13 +21,11 @@
     <div class="flex items-center gap-2 rounded-lg bg-amber-100 px-3 py-1.5 dark:bg-amber-900">
       <i class="fa-solid fa-wrench text-amber-600 dark:text-amber-400"></i>
       <span class="text-lg font-bold text-amber-800 dark:text-amber-200">DevRadar</span>
-      {#if version}
-        <span class="text-xs text-amber-600/60 dark:text-amber-400/60">v{version}</span>
-      {/if}
     </div>
-    <span class="text-sm text-slate-500 dark:text-slate-400">|</span>
-    <span class="text-sm font-medium text-slate-700 dark:text-slate-200">{stats.total} Projekte</span>
-    <span class="hidden text-sm text-slate-400 sm:inline">-- Lokale Projekte auf dem Mac organisieren</span>
+    <button onclick={() => onDonate?.()} class="ml-1" title="Danke sagen">
+      <i class="fa-solid fa-heart text-red-500" style="animation: heartbeat 1.5s ease-in-out infinite; filter: drop-shadow(0 0 3px rgba(239,68,68,0.4));"></i>
+    </button>
+    <span class="hidden text-lg font-semibold text-slate-700 sm:inline dark:text-slate-200">Lokale Projekte auf dem Mac organisieren</span>
   </div>
   <button
     onclick={handleRescan}

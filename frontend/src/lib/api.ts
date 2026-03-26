@@ -24,12 +24,20 @@ export async function authHeaders(extra: Record<string, string> = {}): Promise<R
 }
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
-  const token = await ensureToken();
+  let token = await ensureToken();
   const headers = new Headers(init?.headers);
-  if (!headers.has("X-DevRadar-Token")) {
+  headers.set("X-DevRadar-Token", token);
+  let res = await fetch(url, { ...init, headers });
+
+  // Token ungültig (Backend neu gestartet) -- einmal refreshen und retry
+  if (res.status === 403) {
+    _csrfToken = "";
+    _tokenPromise = null;
+    token = await ensureToken();
     headers.set("X-DevRadar-Token", token);
+    res = await fetch(url, { ...init, headers });
   }
-  const res = await fetch(url, { ...init, headers });
+
   if (!res.ok) {
     const text = await res.text();
     throw new Error(`API-Fehler ${res.status}: ${text}`);
