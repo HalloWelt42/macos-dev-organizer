@@ -31,15 +31,7 @@
       const ytMatch = href.match(YT_RE);
       if (ytMatch) {
         const vid = ytMatch[1];
-        return `<div class="yt-thumb-wrap relative my-3 inline-block w-[300px] cursor-pointer overflow-hidden rounded" data-yt-id="${vid}">
-          <img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="block h-[170px] w-full object-cover" />
-          <span class="absolute top-1.5 right-1.5 pointer-events-none select-none rounded bg-red-600/90 px-1.5 py-0.5 text-white text-[9px] font-medium"><i class="fa-brands fa-youtube"></i> YouTube</span>
-          <div class="absolute bottom-0 left-0 right-0 flex items-center gap-2 bg-black/70 px-2 py-1 text-[10px]">
-            <span class="yt-copy-link cursor-pointer text-slate-300 hover:text-white" data-copy="https://www.youtube.com/watch?v=${vid}" title="YouTube-Link kopieren"><i class="fa-solid fa-link mr-0.5"></i>Link</span>
-            <span class="yt-copy-id cursor-pointer font-mono text-amber-400 hover:text-amber-300" data-copy="${vid}" title="Video-ID kopieren">${vid}</span>
-            <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="ml-auto text-slate-300 hover:text-white no-underline" onclick="event.stopPropagation()" title="Auf YouTube öffnen"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-          </div>
-        </div>`;
+        return `<span class="yt-thumb-wrap relative my-3 block w-[300px] h-[170px] cursor-pointer rounded-md" data-yt-id="${vid}"><img src="/api/yt-thumb/${vid}" alt="YouTube: ${vid}" class="absolute inset-0 h-full w-full rounded-md object-cover" /><span class="absolute top-1.5 right-1.5 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[9px] font-medium text-white"><i class="fa-brands fa-youtube"></i> YouTube</span><span class="absolute bottom-0 left-0 right-0 z-10 flex items-center gap-2 rounded-b-md bg-black/70 px-2 py-1 text-[10px]"><span class="yt-copy-link cursor-pointer text-slate-300 hover:text-white" data-copy="https://www.youtube.com/watch?v=${vid}" title="YouTube-Link kopieren"><i class="fa-solid fa-link mr-0.5"></i>Link kopieren</span><span class="text-slate-600">|</span><span class="yt-copy-id cursor-pointer font-mono font-semibold text-amber-400 hover:text-amber-300" data-copy="${vid}" title="Video-ID kopieren">${vid}</span><a href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener noreferrer" class="ml-auto text-slate-300 hover:text-white no-underline" onclick="event.stopPropagation()" title="Auf YouTube öffnen"><i class="fa-solid fa-arrow-up-right-from-square mr-0.5"></i>Öffnen</a></span></span>`;
       }
     }
 
