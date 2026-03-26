@@ -298,11 +298,14 @@
 
         const setup = () => {
           const parentLink = el.closest("a");
-          const hasExternalLink = parentLink && parentLink.href && (parentLink.href.startsWith("http://") || parentLink.href.startsWith("https://"));
+          // Nur echte externe Links (anderer Host) sind klickbar
+          const isExternal = parentLink?.href
+            && !parentLink.href.startsWith(window.location.origin)
+            && !parentLink.href.startsWith("#");
           const isBadge = el.naturalHeight < 40;
 
-          if (hasExternalLink) {
-            // Bild mit externem Link -- immer in neuem Tab öffnen (auch Badges)
+          if (isExternal) {
+            // Bild mit echtem externem Link -- in neuem Tab öffnen
             parentLink.setAttribute("target", "_blank");
             parentLink.setAttribute("rel", "noopener noreferrer");
             el.style.cursor = "pointer";
@@ -310,8 +313,12 @@
           }
 
           if (isBadge) {
-            // Badge ohne Link -- komplett tot
+            // Badge ohne externen Link -- komplett tot
             el.style.pointerEvents = "none";
+            if (parentLink) {
+              parentLink.style.pointerEvents = "none";
+              parentLink.removeAttribute("href");
+            }
             return;
           }
 
