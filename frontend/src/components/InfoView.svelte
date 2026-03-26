@@ -8,6 +8,7 @@
   let version = $state("");
   let showDonate = $state(false);
   let activeTab = $state(initialTab);
+  let prompts: { id: string; name: string; description: string; prompt: string }[] = $state([]);
 
   // Markdown-Inhalte
   let lizenzHtml = $state("");
@@ -16,6 +17,7 @@
   $effect(() => {
     getVersion().then(v => version = v).catch(() => {});
     loadLegal();
+    fetch("/api/prompts").then(r => r.json()).then(d => prompts = d.prompts || []).catch(() => {});
   });
 
   async function loadLegal() {
@@ -35,6 +37,7 @@
 
   const tabs = [
     { id: "info", label: "Info", icon: "fa-circle-info" },
+    { id: "prompts", label: "Prompts", icon: "fa-robot" },
     { id: "lizenz", label: "Lizenz", icon: "fa-scale-balanced" },
     { id: "datenschutz", label: "Datenschutz", icon: "fa-shield-halved" },
     { id: "bedanken", label: "Bedanken", icon: "fa-heart" },
@@ -107,6 +110,23 @@
       <p class="mt-4 text-center text-[10px] text-slate-400 dark:text-slate-600">
         {year} HalloWelt42
       </p>
+    </div>
+
+  {:else if activeTab === "prompts"}
+    <div class="space-y-3">
+      {#each prompts as p}
+        <div class="rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
+          <div class="flex items-center gap-2 border-b border-slate-100 px-4 py-2.5 dark:border-slate-700">
+            <i class="fa-solid fa-robot text-amber-500"></i>
+            <span class="text-sm font-semibold text-slate-700 dark:text-slate-200">{p.name}</span>
+            <span class="text-xs text-slate-400">-- {p.description}</span>
+          </div>
+          <pre class="max-h-60 overflow-y-auto px-4 py-3 text-[11px] leading-relaxed text-slate-600 dark:text-slate-400 whitespace-pre-wrap">{p.prompt}</pre>
+        </div>
+      {/each}
+      {#if prompts.length === 0}
+        <p class="text-xs text-slate-400">Keine Prompts verfügbar. LLM nicht verbunden?</p>
+      {/if}
     </div>
 
   {:else if activeTab === "lizenz"}

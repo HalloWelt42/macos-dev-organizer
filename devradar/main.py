@@ -589,6 +589,36 @@ def stop_scan():
     return {"status": "ok"}
 
 
+@app.get("/api/prompts")
+def get_prompts():
+    """Liefert alle verwendeten Prompts zur Anzeige in den Einstellungen."""
+    return {
+        "prompts": [
+            {
+                "id": "assistant",
+                "name": "Projektassistent",
+                "description": "Suche und Fragen zu Projekten",
+                "prompt": SYSTEM_PROMPT.replace("{projects_json}", "[... Projektliste ...]"),
+            },
+            {
+                "id": "translate",
+                "name": "README-Übersetzer",
+                "description": "Übersetzung von READMEs ins Deutsche",
+                "prompt": "Übersetze die folgende README-Datei ins Deutsche. Gib NUR die übersetzte README aus, KEINE Einleitung, KEINEN Kommentar, KEINE Erklärung.\n\nABSOLUTE REGELN:\n1. Code-Blöcke KOMPLETT UNVERÄNDERT übernehmen.\n2. Inline-Code KOMPLETT UNVERÄNDERT übernehmen.\n3. Markdown-Formatierung EXAKT beibehalten.\n4. Fachbegriffe bleiben Englisch.\n5. Produkt-/Projektnamen, URLs, Pfade, Dateinamen unverändert.\n6. Badge-Links und Shield-URLs 1:1 übernehmen.\n7. Natürlich klingend, nicht maschinell.\n8. VOLLSTÄNDIG übersetzen, nichts weglassen.\n9. KEINE Einleitung -- direkt mit dem Inhalt beginnen.",
+            },
+            {
+                "id": "enrich",
+                "name": "Beschreibungsgenerator",
+                "description": "Automatische Projektbeschreibungen",
+                "prompt": "Erstelle eine knappe, informative Beschreibung auf Deutsch für folgendes Projekt.\nDie Beschreibung soll 2-4 Sätze lang sein und den Zweck, die Technologien und den Einsatzzweck zusammenfassen.\nNutze Markdown für die Formatierung.",
+            },
+        ]
+    }
+
+
+from devradar.llm import SYSTEM_PROMPT
+
+
 @app.post("/api/ask")
 async def api_ask(request: AskRequest):
     """Streaming-Endpunkt: Gibt SSE-Events mit Chunks und Stats zurück."""
