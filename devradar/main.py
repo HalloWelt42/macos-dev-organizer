@@ -257,6 +257,55 @@ async def youtube_thumbnail(video_id: str):
     )
 
 
+# Bild-Proxy: Externe Bilder cachen und über eigenen Server ausliefern
+_img_cache: dict[str, tuple[bytes, str]] = {}
+# Bild-Proxy: Kein Host-Limit, aber nur Bild-Content-Types werden akzeptiert
+_ALLOWED_IMG_CONTENT = {"image/png", "image/jpeg", "image/gif", "image/webp", "image/svg+xml", "image/x-icon"}
+
+
+@app.get("/api/img-proxy")
+async def image_proxy(url: str = Query(..., description="Externe Bild-URL")):
+    """Externes Bild über den Server laden und gecacht ausliefern."""
+    import urllib.parse
+
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise HTTPException(status_code=400, detail="Nur HTTP/HTTPS erlaubt")
+
+    # Cache prüfen
+    if url in _img_cache:
+        data, ct = _img_cache[url]
+        return StreamingResponse(
+            iter([data]),
+            media_type=ct,
+            headers={"Cache-Control": "public, max-age=86400, immutable"},
+        )
+
+    try:
+        async with _httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+            resp = await client.get(url)
+            if resp.status_code != 200:
+                raise HTTPException(status_code=404, detail="Bild nicht gefunden")
+            ct = resp.headers.get("content-type", "").split(";")[0].strip()
+            if ct not in _ALLOWED_IMG_CONTENT:
+                raise HTTPException(status_code=403, detail=f"Kein erlaubter Bildtyp: {ct}")
+            data = resp.content
+    except _httpx.RequestError:
+        raise HTTPException(status_code=502, detail="Bild nicht erreichbar")
+
+    # Cache begrenzen (max 500 Einträge)
+    if len(_img_cache) > 500:
+        oldest = next(iter(_img_cache))
+        del _img_cache[oldest]
+    _img_cache[url] = (data, ct)
+
+    return StreamingResponse(
+        iter([data]),
+        media_type=ct,
+        headers={"Cache-Control": "public, max-age=86400, immutable"},
+    )
+
+
 @app.post("/api/projects/{project_id}/translate")
 async def api_translate(project_id: int):
     """Übersetze die README eines Projekts ins Deutsche per LLM-Streaming."""

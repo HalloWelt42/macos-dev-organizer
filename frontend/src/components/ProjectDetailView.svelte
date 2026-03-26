@@ -297,20 +297,21 @@
         el.dataset.lightboxReady = "1";
 
         const setup = () => {
-          // Badges (kleine Bilder < 40px Höhe) komplett nicht klickbar
-          if (el.naturalHeight < 40) {
-            el.style.pointerEvents = "none";
-            const parentLink = el.closest("a");
-            if (parentLink) parentLink.style.pointerEvents = "none";
-            return;
-          }
-
           const parentLink = el.closest("a");
-          if (parentLink && parentLink.href) {
-            // Bild in Link -- Link in neuem Tab öffnen
+          const hasExternalLink = parentLink && parentLink.href && (parentLink.href.startsWith("http://") || parentLink.href.startsWith("https://"));
+          const isBadge = el.naturalHeight < 40;
+
+          if (hasExternalLink) {
+            // Bild mit externem Link -- immer in neuem Tab öffnen (auch Badges)
             parentLink.setAttribute("target", "_blank");
             parentLink.setAttribute("rel", "noopener noreferrer");
             el.style.cursor = "pointer";
+            return;
+          }
+
+          if (isBadge) {
+            // Badge ohne Link -- komplett tot
+            el.style.pointerEvents = "none";
             return;
           }
 
@@ -416,6 +417,15 @@
         const filePath = encodeURIComponent(src);
         return `<img${before}src="/api/file?project_path=${encoded}&file_path=${filePath}"`;
       }
+    );
+    // Externe Bild-URLs durch Proxy leiten (Sicherheit: kein direkter externer Zugriff)
+    content = content.replace(
+      /!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g,
+      (_, alt, url) => `![${alt}](/api/img-proxy?url=${encodeURIComponent(url)})`
+    );
+    content = content.replace(
+      /<img([^>]*?)src=["'](https?:\/\/[^"']+)["']/g,
+      (_, before, url) => `<img${before}src="/api/img-proxy?url=${encodeURIComponent(url)}"`
     );
     return content;
   });
