@@ -71,6 +71,50 @@ html, body, #app {
   padding: 0;
 }
 
+/* Tabellen in READMEs */
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.85em;
+}
+
+.prose th {
+  background: rgb(241 245 249);
+  font-weight: 600;
+  text-align: left;
+}
+
+.prose td, .prose th {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgb(226 232 240);
+}
+
+.prose tbody tr:nth-child(even) {
+  background: rgb(248 250 252);
+}
+
+.prose tbody tr:hover {
+  background: rgb(254 252 232);
+}
+
+@media (prefers-color-scheme: dark) {
+  .prose th {
+    background: rgb(30 41 59);
+  }
+
+  .prose td, .prose th {
+    border-color: rgb(51 65 85);
+  }
+
+  .prose tbody tr:nth-child(even) {
+    background: rgb(15 23 42 / 0.5);
+  }
+
+  .prose tbody tr:hover {
+    background: rgb(51 65 85 / 0.5);
+  }
+}
+
 /* Heartbeat-Animation fuer Spende-Herz */
 @keyframes heartbeat {
   0%, 100% { transform: scale(1); }

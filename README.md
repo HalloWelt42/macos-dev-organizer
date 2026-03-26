@@ -2,7 +2,9 @@
 
 Lokale Projekte auf dem Mac organisieren. DevRadar scannt konfigurierbare Verzeichnisse nach Softwareprojekten, indiziert sie und stellt ein Web-Dashboard bereit.
 
-![DevRadar](docs/screenshot.png)
+![Dashboard](docs/dashboard.png)
+
+![Detailansicht](docs/detailansicht.png)
 
 ## Features
 
@@ -79,4 +81,4 @@ docs/              Screenshots
 
 ## Lizenz
 
-MIT
+CC BY-NC-ND 4.0 mit Zusatzbestimmungen. Siehe [Lizenz](frontend/public/legal/de/lizenz.md) fuer Details.
