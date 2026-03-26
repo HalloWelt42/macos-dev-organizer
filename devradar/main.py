@@ -320,13 +320,15 @@ async def api_translate(project_id: int):
 
     translate_prompt = f"""Übersetze die folgende README-Datei ins Deutsche.
 
-WICHTIGE REGELN:
-1. Markdown-Formatierung EXAKT beibehalten: Headings (#), Links, Listen, Bilder, Tabellen.
-2. Code-Blöcke (``` ... ```) und Inline-Code (`...`) NIEMALS übersetzen oder verändern -- den Inhalt 1:1 übernehmen.
-3. Fachbegriffe der Softwareentwicklung bleiben auf Englisch (Repository, Branch, Commit, API, Framework, Runtime, Build, Deploy, etc.).
-4. Produkt- und Projektnamen, URLs, Pfade bleiben unverändert.
-5. Badge-Links ([![...]) und Shield-URLs 1:1 übernehmen.
-6. Die Übersetzung soll natürlich klingen, nicht maschinell.
+ABSOLUTE REGELN (Verstoß = fehlerhaft):
+1. Code-Blöcke (``` ... ```) werden KOMPLETT UNVERÄNDERT übernommen -- kein einziges Zeichen im Code ändern.
+2. Inline-Code (`...`) wird KOMPLETT UNVERÄNDERT übernommen -- Inhalt zwischen Backticks NIEMALS übersetzen.
+3. Markdown-Formatierung EXAKT beibehalten: Headings, Links, Listen, Bilder, Tabellen.
+4. Fachbegriffe bleiben Englisch: Repository, Branch, Commit, API, Framework, Runtime, Build, Deploy, Plugin, Config, Token, Endpoint, Middleware, etc.
+5. Produkt-/Projektnamen, URLs, Pfade, Dateinamen bleiben unverändert.
+6. Badge-Links und Shield-URLs 1:1 übernehmen.
+7. Natürlich klingend, nicht maschinell.
+8. Die VOLLSTÄNDIGE README übersetzen, nichts weglassen oder kürzen.
 
 README:
 {project.readme_content}"""
@@ -528,6 +530,55 @@ def api_open(request: OpenRequest):
 def api_rescan():
     result = do_scan()
     return {"status": "ok", **result}
+
+
+@app.get("/api/rescan/stream")
+async def api_rescan_stream():
+    """SSE-Streaming-Rescan: Sendet den aktuellen Scan-Pfad als Event."""
+    import asyncio
+    import queue
+
+    path_queue: queue.Queue[str | None] = queue.Queue()
+
+    def on_path(p: str):
+        path_queue.put(p)
+
+    async def generate():
+        import json
+        import threading
+
+        def run_scan():
+            global scanning_active
+            assert db is not None
+            scanning_active = True
+            results = run_all_scanners(config, on_path=on_path)
+            existing_paths: set[str] = set()
+            added = 0
+            for info in results:
+                if not scanning_active:
+                    break
+                existing_paths.add(info.path)
+                db.upsert_project(info)
+                added += 1
+            removed = db.remove_missing(existing_paths) if scanning_active else 0
+            db.log_scan(found=len(results), added=added, removed=removed)
+            scanning_active = False
+            path_queue.put(None)
+
+        thread = threading.Thread(target=run_scan, daemon=True)
+        thread.start()
+
+        while True:
+            try:
+                p = path_queue.get(timeout=0.1)
+                if p is None:
+                    yield f"data: {json.dumps({'type': 'done'})}\n\n"
+                    break
+                yield f"data: {json.dumps({'type': 'path', 'path': p})}\n\n"
+            except queue.Empty:
+                await asyncio.sleep(0.05)
+
+    return StreamingResponse(generate(), media_type="text/event-stream")
 
 
 @app.post("/api/scan/stop")

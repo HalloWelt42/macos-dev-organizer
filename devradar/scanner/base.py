@@ -50,7 +50,9 @@ def scan_directory(path: Path, config: Config) -> list[ProjectInfo]:
     return results
 
 
-def run_all_scanners(config: Config) -> list[ProjectInfo]:
+from typing import Callable
+
+def run_all_scanners(config: Config, on_path: Callable[[str], None] | None = None) -> list[ProjectInfo]:
     """Durchlaufe alle konfigurierten Wurzelverzeichnisse und scanne Projekte."""
     all_results: list[ProjectInfo] = []
     seen_paths: set[str] = set()
@@ -59,7 +61,7 @@ def run_all_scanners(config: Config) -> list[ProjectInfo]:
         if not root.exists():
             logger.info("Scan-Root existiert nicht: %s", root)
             continue
-        _walk(root, config, 0, all_results, seen_paths)
+        _walk(root, config, 0, all_results, seen_paths, on_path)
 
     return all_results
 
@@ -70,6 +72,7 @@ def _walk(
     depth: int,
     results: list[ProjectInfo],
     seen: set[str],
+    on_path: Callable[[str], None] | None = None,
 ) -> None:
     """Rekursives Durchlaufen mit Tiefenbegrenzung."""
     if depth > config.max_depth:
@@ -78,6 +81,9 @@ def _walk(
     path_str = str(path)
     if path_str in seen:
         return
+
+    if on_path:
+        on_path(path_str)
 
     # Dieses Verzeichnis scannen
     found = scan_directory(path, config)
@@ -115,10 +121,8 @@ def _walk(
         primary.tags = sorted(all_tags)
         primary.metadata = all_meta
         results.append(primary)
-        # Projekt gefunden -- nicht tiefer scannen
-        return
 
-    # Unterverzeichnisse durchlaufen (nur wenn kein Projekt gefunden)
+    # Unterverzeichnisse durchlaufen
     try:
         for child in sorted(path.iterdir()):
             name = child.name
@@ -134,6 +138,6 @@ def _walk(
                     continue
             except PermissionError:
                 continue
-            _walk(child, config, depth + 1, results, seen)
+            _walk(child, config, depth + 1, results, seen, on_path)
     except PermissionError:
         pass

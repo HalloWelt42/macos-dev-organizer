@@ -52,7 +52,7 @@ async def stream_llm(
                     {"role": "user", "content": question},
                 ],
                 "temperature": 0.3,
-                "max_tokens": 2000,
+                "max_tokens": -1,
                 "stream": True,
             },
         ) as response:
@@ -130,7 +130,7 @@ async def ask_llm(
                     {"role": "user", "content": question},
                 ],
                 "temperature": 0.3,
-                "max_tokens": 2000,
+                "max_tokens": -1,
             },
         )
         response.raise_for_status()

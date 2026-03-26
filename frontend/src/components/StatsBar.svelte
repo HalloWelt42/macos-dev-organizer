@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { rescan } from "../lib/api";
+  import { authHeaders } from "../lib/api";
   import type { Stats } from "../lib/types";
 
   let { stats, onRescan, onDonate }: { stats: Stats; onRescan: () => void; onDonate?: () => void } = $props();
   let scanning = $state(false);
-  let dark = $state(typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  let scanPath = $state("");
+  let dark = $state(typeof window !== "undefined" && document.documentElement.classList.contains("dark"));
 
   function toggleTheme() {
     dark = !dark;
@@ -14,11 +15,31 @@
 
   async function handleRescan() {
     scanning = true;
+    scanPath = "";
     try {
-      await rescan();
+      const hdrs = await authHeaders();
+      const res = await fetch("/api/rescan/stream", { headers: hdrs });
+      const reader = res.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        while (buffer.includes("\n\n")) {
+          const idx = buffer.indexOf("\n\n");
+          const line = buffer.slice(0, idx).trim();
+          buffer = buffer.slice(idx + 2);
+          if (!line.startsWith("data: ")) continue;
+          const data = JSON.parse(line.slice(6));
+          if (data.type === "path") scanPath = data.path;
+          else if (data.type === "done") break;
+        }
+      }
       onRescan();
     } finally {
       scanning = false;
+      scanPath = "";
     }
   }
 </script>
@@ -57,3 +78,10 @@
     </button>
   </div>
 </div>
+
+{#if scanning}
+  <div class="mt-1 flex items-center gap-2 rounded bg-slate-100 px-3 py-1 text-[11px] text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+    <i class="fa-solid fa-spinner animate-spin text-amber-500"></i>
+    <span class="truncate">{scanPath || "Starte Scan..."}</span>
+  </div>
+{/if}
