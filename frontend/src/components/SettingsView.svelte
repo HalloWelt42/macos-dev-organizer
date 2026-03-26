@@ -293,16 +293,18 @@
           <i class="fa-solid fa-file-lines mr-1"></i>Übersetzungs-Prompt anzeigen
         </summary>
         <pre class="mt-2 max-h-48 overflow-y-auto rounded-md bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-600 dark:bg-slate-900 dark:text-slate-400">Übersetze die folgende README-Datei ins Deutsche.
+Gib NUR die übersetzte README aus, KEINE Einleitung.
 
-ABSOLUTE REGELN (Verstoß = fehlerhaft):
-1. Code-Blöcke (``` ... ```) werden KOMPLETT UNVERÄNDERT übernommen.
-2. Inline-Code (`...`) wird KOMPLETT UNVERÄNDERT übernommen.
+ABSOLUTE REGELN:
+1. Code-Blöcke KOMPLETT UNVERÄNDERT übernehmen.
+2. Inline-Code KOMPLETT UNVERÄNDERT übernehmen.
 3. Markdown-Formatierung EXAKT beibehalten.
 4. Fachbegriffe bleiben Englisch.
 5. Produkt-/Projektnamen, URLs, Pfade, Dateinamen unverändert.
 6. Badge-Links und Shield-URLs 1:1 übernehmen.
 7. Natürlich klingend, nicht maschinell.
-8. VOLLSTÄNDIGE README übersetzen, nichts weglassen.</pre>
+8. VOLLSTÄNDIG übersetzen, nichts weglassen.
+9. KEINE Einleitung -- direkt mit dem Inhalt beginnen.</pre>
       </details>
     {/if}
   </section>

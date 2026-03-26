@@ -318,17 +318,18 @@ async def api_translate(project_id: int):
     if not config.llm.enabled or not await is_available(config.llm):
         raise HTTPException(status_code=503, detail="LLM nicht verfügbar")
 
-    translate_prompt = f"""Übersetze die folgende README-Datei ins Deutsche.
+    translate_prompt = f"""Übersetze die folgende README-Datei ins Deutsche. Gib NUR die übersetzte README aus, KEINE Einleitung, KEINEN Kommentar, KEINE Erklärung.
 
-ABSOLUTE REGELN (Verstoß = fehlerhaft):
-1. Code-Blöcke (``` ... ```) werden KOMPLETT UNVERÄNDERT übernommen -- kein einziges Zeichen im Code ändern.
-2. Inline-Code (`...`) wird KOMPLETT UNVERÄNDERT übernommen -- Inhalt zwischen Backticks NIEMALS übersetzen.
-3. Markdown-Formatierung EXAKT beibehalten: Headings, Links, Listen, Bilder, Tabellen.
-4. Fachbegriffe bleiben Englisch: Repository, Branch, Commit, API, Framework, Runtime, Build, Deploy, Plugin, Config, Token, Endpoint, Middleware, etc.
-5. Produkt-/Projektnamen, URLs, Pfade, Dateinamen bleiben unverändert.
+ABSOLUTE REGELN:
+1. Code-Blöcke (``` ... ```) KOMPLETT UNVERÄNDERT übernehmen.
+2. Inline-Code (`...`) KOMPLETT UNVERÄNDERT übernehmen.
+3. Markdown-Formatierung EXAKT beibehalten.
+4. Fachbegriffe bleiben Englisch.
+5. Produkt-/Projektnamen, URLs, Pfade, Dateinamen unverändert.
 6. Badge-Links und Shield-URLs 1:1 übernehmen.
 7. Natürlich klingend, nicht maschinell.
-8. Die VOLLSTÄNDIGE README übersetzen, nichts weglassen oder kürzen.
+8. VOLLSTÄNDIG übersetzen, nichts weglassen.
+9. KEINE Einleitung wie "Hier ist die Übersetzung" -- direkt mit dem Inhalt beginnen.
 
 README:
 {project.readme_content}"""
