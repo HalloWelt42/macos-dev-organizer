@@ -62,7 +62,7 @@
 
 <div class="mx-auto flex h-full max-w-2xl flex-col">
   <!-- Tabs -->
-  <div class="mb-3 flex gap-1">
+  <div class="mb-5 flex justify-center gap-1">
     {#each tabs as tab}
       <button
         onclick={() => activeTab = tab.id}
